@@ -27,7 +27,8 @@ import uk.gov.hmrc.eeitt.Models.Input
 object CaptureForm {
   val userInput: Form[Input] = Form(
     mapping(
-      "typeOf" -> nonEmptyText
+      "typeOf" -> nonEmptyText,
+      "credential" -> nonEmptyText
     )(Input.apply)(Input.unapply)
   )
 }

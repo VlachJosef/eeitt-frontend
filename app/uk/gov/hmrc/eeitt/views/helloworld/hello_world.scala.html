@@ -9,6 +9,7 @@
 
             @helper.form(action = uk.gov.hmrc.eeitt.controllers.routes.InputController.myRedirect()) {
                 @inputText(captureForm("typeOf"))
+                @inputText(captureForm("credential"))
                 <input type="submit" value="Submit">
 
         }

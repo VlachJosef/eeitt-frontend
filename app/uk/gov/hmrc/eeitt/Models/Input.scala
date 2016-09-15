@@ -21,6 +21,6 @@ import play.api.data.Form
 /**
   * Created by harrison on 14/09/16.
   */
-case class Input(typeOf: String) {
+case class Input(typeOf: String, credential: String) {
 
 }

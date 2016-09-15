@@ -31,12 +31,12 @@ object InputController extends Controller {
   }
 
 
-  val myRedirect = Action { implicit request =>
+  def myRedirect = Action { implicit request =>
     val userData = CaptureForm.userInput.bindFromRequest.get
 
     print(userData.typeOf)
 //
-   Ok("http://localhost:9000/main/registration/details?" + userData.typeOf)
+   Ok("http://localhost:9000/main/registration/details?" + userData.typeOf + userData.credential)
 
 
   }
