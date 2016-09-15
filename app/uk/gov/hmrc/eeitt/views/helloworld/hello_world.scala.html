@@ -1,5 +1,17 @@
-@()(implicit request: Request[_])
+@(captureForm: Form[uk.gov.hmrc.eeitt.Models.Input])(implicit request: Request[_])
 
-@uk.gov.hmrc.eeitt.views.html.main_template(title = "Hello from eeitt-frontend", bodyClasses = None) {
-    <h1>Hello from eeitt-frontend !</h1>
+
+@import helper._
+@uk.gov.hmrc.eeitt.views.html.main_template(title = "EEITT", bodyClasses = None) {
+    <h1>Land fill tax</h1>
+    <body>
+
+
+            @helper.form(action = uk.gov.hmrc.eeitt.controllers.routes.InputController.myRedirect()) {
+                @inputText(captureForm("typeOf"))
+                <input type="submit" value="Submit">
+
+        }
+    </body>
+
 }

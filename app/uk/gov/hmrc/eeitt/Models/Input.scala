@@ -14,30 +14,13 @@
  * limitations under the License.
  */
 
-/*
-package uk.gov.hmrc.eeitt.controllers
+package uk.gov.hmrc.eeitt.Models
 
 import play.api.data.Form
-import play.api.data.Forms._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import uk.gov.hmrc.eeitt.Forms.CaptureForm
-import uk.gov.hmrc.eeitt.Models.Input
 
-import scala.concurrent.Future
+/**
+  * Created by harrison on 14/09/16.
+  */
+case class Input(typeOf: String) {
 
-
-object HelloWorld extends HelloWorldTrait
-
-trait HelloWorldTrait extends FrontendController {
-  val myRedirect = Action.async { implicit request =>
-    val aForm = InputController.userData
-    Future.successful(Ok("http://localhost:9000/main/registration/details?" + aForm.typeOf + aForm.credential))
-  }
 }
-
-
-
-
-*/
-

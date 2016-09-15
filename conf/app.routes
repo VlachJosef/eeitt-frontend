@@ -1,3 +1,4 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.eeitt.controllers.HelloWorld.helloWorld
+GET         /hello-world                           uk.gov.hmrc.eeitt.controllers.InputController.helloWorld
+POST        /hello-world                           uk.gov.hmrc.eeitt.controllers.InputController.myRedirect()
