@@ -3,11 +3,16 @@
 
 @import helper._
 @uk.gov.hmrc.eeitt.views.html.main_template(title = "EEITT", bodyClasses = None) {
+
     <h1>Land fill tax</h1>
     <body>
 
 
+
             @helper.form(action = uk.gov.hmrc.eeitt.controllers.routes.InputController.myRedirect()) {
+
+                @helper.CSRF.formField
+
                 @inputText(captureForm("typeOf"))
                 @inputText(captureForm("credential"))
                 <input type="submit" value="Submit">
