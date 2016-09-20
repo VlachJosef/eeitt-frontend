@@ -14,30 +14,24 @@
  * limitations under the License.
  */
 
-/*
 package uk.gov.hmrc.eeitt.controllers
-
-import play.api.data.Form
-import play.api.data.Forms._
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import uk.gov.hmrc.eeitt.Forms.CaptureForm
-import uk.gov.hmrc.eeitt.Models.Input
+import play.api.libs.json.{JsValue, Json}
+import play.api.mvc.{Action, Controller}
+import play.mvc.Action._
+import uk.gov.hmrc.eeitt.Models._
+import uk.gov.hmrc.eeitt.views.html.displayresponse
+import uk.gov.hmrc.eeitt.views.html.displayresponse
 
 import scala.concurrent.Future
 
+/**
+  * Created by harrison on 19/09/16.
+  */
+object ReturnData extends Controller{
+/*
 
-object HelloWorld extends HelloWorldTrait
+  def display = Action.async { implicit request =>
+    Future.successful(Ok(displayresponse))
+  }*/
 
-trait HelloWorldTrait extends FrontendController {
-  val myRedirect = Action.async { implicit request =>
-    val aForm = InputController.userData
-    Future.successful(Ok("http://localhost:9000/main/registration/details?" + aForm.typeOf + aForm.credential))
-  }
 }
-
-
-
-
-*/
-

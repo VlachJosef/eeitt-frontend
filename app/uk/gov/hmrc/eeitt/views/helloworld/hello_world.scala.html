@@ -8,14 +8,13 @@
     <body>
 
 
+    @helper.form(uk.gov.hmrc.eeitt.controllers.routes.InputController.asyncAction()) {
 
-            @helper.form(action = uk.gov.hmrc.eeitt.controllers.routes.InputController.myRedirect()) {
+        @helper.CSRF.formField
 
-                @helper.CSRF.formField
-
-                @inputText(captureForm("typeOf"))
-                @inputText(captureForm("credential"))
-                <input type="submit" value="Submit">
+        @inputText(captureForm("typeOf"))
+        @inputText(captureForm("credential"))
+        <input type="submit" value="Submit">
 
         }
     </body>

@@ -15,6 +15,7 @@
  */
 
 package uk.gov.hmrc.eeitt.Forms
+
 import play.api.data._
 import play.api.data.Forms._
 

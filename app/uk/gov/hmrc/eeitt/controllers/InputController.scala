@@ -15,29 +15,54 @@
  */
 
 package uk.gov.hmrc.eeitt.controllers
-import uk.gov.hmrc.eeitt.views.html.helloworld.hello_world
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import play.api.Play.current
+import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.libs.ws.WS
 import play.api.mvc.{Action, Controller}
 import uk.gov.hmrc.eeitt.Forms.CaptureForm
+import uk.gov.hmrc.eeitt.Models._
+import uk.gov.hmrc.eeitt.views.html.displayresponse
+import uk.gov.hmrc.eeitt.views.html.helloworld.hello_world
+import uk.gov.hmrc.play.http.{HttpGet, HttpPost}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
 
 /**
   * Created by harrison on 14/09/16.
   */
-object InputController extends Controller {
-  def helloWorld = Action{ implicit request =>
-    Ok(hello_world(CaptureForm.userInput))
-
-  }
-
-
-  def myRedirect = Action { implicit request =>
-    val userData = CaptureForm.userInput.bindFromRequest.get
-
-    print(userData.typeOf)
-//
-   Ok("http://localhost:9000/main/registration/details?" + userData.typeOf + userData.credential)
-
+trait ConnectorWIthHttpValues {
+  val http: HttpGet with HttpPost {
 
   }
 }
+object InputController extends Controller {
+  val helloWorld = Action.async { implicit request =>
+    Future.successful(Ok(hello_world(CaptureForm.userInput)))
+  }
+
+
+  def asyncAction = Action.async { implicit request =>
+    CaptureForm.userInput.bindFromRequest.fold(
+      formWithErrors => Future.successful(Ok(hello_world(formWithErrors))),
+      input => {
+        val futureJsUserArray = WS.url("http://localhost:9000/main/registration/details?" + input.typeOf + input.credential).get()
+
+        futureJsUserArray.map { jsResponse =>
+          val successResponse = Json.parse(jsResponse.body).validate[SuccessResponse]
+          successResponse match {
+            case JsSuccess(response, _) => Ok(displayresponse(response))
+            case e: JsError => InternalServerError("problem with a response fromm downstream service, details: " + e.errors)
+          }
+
+        }
+      }
+    )
+  }
+}
+
+
+
+
