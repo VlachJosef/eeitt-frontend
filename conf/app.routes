@@ -6,5 +6,6 @@ POST        /hello-world                           uk.gov.hmrc.eeitt.controllers
 GET         /dataPage                              uk.gov.hmrc.eeitt.controllers.InputController.asyncAction
 
 GET         /somepage                              uk.gov.hmrc.eeitt.controllers.TestPageController.aPage
-GET         /assets/*file                          controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets                                controllers.Assets.at(path="/public/javascripts", file="jquery-3.1.0.min.js")
 GET         /form                                  controllers.Assets.at(path="/public", file="form.html")
+GET         /dfsform                               uk.gov.hmrc.eeitt.controllers.FormController.wsAction
