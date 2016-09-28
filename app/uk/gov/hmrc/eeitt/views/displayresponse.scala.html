@@ -3,9 +3,9 @@
 @import uk.gov.hmrc.eeitt.Models.SuccessResponse
 
 
-
-    <h1>Land fill tax</h1>
+@import helper._
     <body>
+        <h1>Land fill tax</h1>
         <p>SAP Number:@successResponse.sapNumber</p>
         <p>Safe ID:@successResponse.safeId</p>
         <p>Is An Agent: @successResponse.isAnAgent</p>

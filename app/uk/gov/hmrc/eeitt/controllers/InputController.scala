@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.eeitt.controllers
 
+import play.Logger
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play.current
 import play.api.libs.json.{JsError, JsSuccess, Json}
