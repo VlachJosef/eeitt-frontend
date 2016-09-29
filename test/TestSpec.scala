@@ -21,6 +21,7 @@ class TestSpec extends FlatSpec with Matchers {
   "blah" should "work" in {
 
     1 shouldBe(1)
+    2 shouldBe(2)
   }
 
 
