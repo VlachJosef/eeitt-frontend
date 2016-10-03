@@ -35,6 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait DfsConnector {
   /**
     * @return
+    *
     */
   def http: WSPost
 
