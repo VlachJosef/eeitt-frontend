@@ -25,7 +25,7 @@ import play.api.http.Status
 
 trait DfsFrontEndServer extends WithWiremock{ suite: Suite =>
 
-  override val dependenciesPort: Int = 9090
+  override val dependenciesPort: Int = 9094
 
   val postUrl = "/forms/form/penalty-enquiry/new"
 

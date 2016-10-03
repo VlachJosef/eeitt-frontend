@@ -1,21 +1,32 @@
-import junit.framework.TestCase
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
-import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.{eq => sameAs}
+import org.mockito.Mockito._
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.mock.MockitoSugar
-import org.mockito.Mockito._
-import org.mockito.Matchers._
+import play.api.LoggerLike
 import play.api.http.Status
-import play.api.{LoggerLike, Play}
 import play.twirl.api.Html
 import uk.gov.hmrc.eeitt.DfsConnector
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.http.ws.WSPost
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.eeitt
 
 /**
   * Created by harrison on 03/10/16.
@@ -30,7 +41,7 @@ class ConnectorSpec extends UnitSpec
     "POST a properly formatted payload" in new TestCase {
       givenDfsRespondsWith(
         requestBody = expectedRequestBody,
-        respoonseBody = expectedResponseBody
+        responseBody = expectedResponseBody
       )
 
       implicit val hc = HeaderCarrierForPartials(HeaderCarrier(), "")
@@ -39,7 +50,7 @@ class ConnectorSpec extends UnitSpec
         utr = utr
       ).futureValue
 
-      repsonse shouldBe Html(expectedResponseBody)
+      response shouldBe Html(expectedResponseBody)
     }
 
     "Display error message in HTML when call to DFS fails" in new TestCase {
@@ -60,8 +71,8 @@ class ConnectorSpec extends UnitSpec
     }
 
     "Display error message in HTML and log message when call to DFS returns BAD_REQUEST" in new TestCase {
-      errorMessage = "It's all gone wrong"
-      errorResponseBody =
+      val errorMessage = "It's all gone wrong"
+      val errorResponseBody =
         """{
           | "Status":400
           | "message": "$errorMessage"
@@ -116,7 +127,7 @@ class ConnectorSpec extends UnitSpec
          | }
        """.stripMargin
 
-     val expectedResponseBody = "<html></html>"
+    val expectedResponseBody = "<html></html>"
   }
 
 }
