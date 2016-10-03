@@ -16,9 +16,13 @@
 
 import org.scalatest.{Matchers, FlatSpec}
 
+import com.github.tomakehurst._
+
 class TestSpec extends FlatSpec with Matchers {
 
   "blah" should "work" in {
+
+
 
     1 shouldBe(1)
     2 shouldBe(2)
