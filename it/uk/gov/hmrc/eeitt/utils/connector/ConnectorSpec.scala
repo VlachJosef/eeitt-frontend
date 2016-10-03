@@ -1,3 +1,4 @@
+package uk.gov.hmrc.eeitt.utils.connector
 /*
  * Copyright 2016 HM Revenue & Customs
  *
@@ -13,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.{eq => sameAs}
 import org.mockito.Mockito._
@@ -23,10 +23,11 @@ import play.api.LoggerLike
 import play.api.http.Status
 import play.twirl.api.Html
 import uk.gov.hmrc.eeitt.DfsConnector
+import uk.gov.hmrc.eeitt.utils.utils.DfsFrontEndServer
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.partials.HeaderCarrierForPartials
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import uk.gov.hmrc.eeitt
+
 
 /**
   * Created by harrison on 03/10/16.
@@ -103,7 +104,7 @@ class ConnectorSpec extends UnitSpec
 
 
   trait TestCase {
-    val forType = "penalty-enquiry"
+    val forType = "landfill-tax-group-member-details"
     val connector = new DfsConnector {
 
       override val logger = mock[LoggerLike]

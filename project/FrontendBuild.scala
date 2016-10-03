@@ -52,7 +52,7 @@ private object AppDependencies {
         "org.jsoup" % "jsoup" % "1.8.1" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
         "com.github.tomakehurst" % "wiremock" % "1.58" % scope,
-        "uk.gov.hmrc" %% "http-verbs-test" % "0.1.0" % scope
+        "uk.gov.hmrc" %% "http-verbs-test" % "0.1.0" % "it"
       )
     }.test
   }

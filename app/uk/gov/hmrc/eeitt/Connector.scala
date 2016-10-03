@@ -54,7 +54,6 @@ trait DfsConnector {
     * @return
     */
   def errorDisplay = uk.gov.hmrc.eeitt.views.html.formerror.render()
-
   /**
     * @param returnUrl
     * @param utr

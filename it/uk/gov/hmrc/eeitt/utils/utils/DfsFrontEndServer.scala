@@ -1,3 +1,5 @@
+package uk.gov.hmrc.eeitt.utils.utils
+
 /*
  * Copyright 2016 HM Revenue & Customs
  *
@@ -23,11 +25,12 @@ import org.scalatest.Suite
 import play.api.http.Status
 
 
+
 trait DfsFrontEndServer extends WithWiremock{ suite: Suite =>
 
   override val dependenciesPort: Int = 9094
 
-  val postUrl = "/forms/form/penalty-enquiry/new"
+  val postUrl = "/forms/form/landfill-tax-group-member-details/new"
 
   def givenDfsRespondsSuccessfullyWith(responseBody: String) =
     wireMock.register(

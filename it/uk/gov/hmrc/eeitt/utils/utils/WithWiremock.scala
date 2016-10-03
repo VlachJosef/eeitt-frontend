@@ -1,3 +1,5 @@
+package uk.gov.hmrc.eeitt.utils.utils
+
 /*
  * Copyright 2016 HM Revenue & Customs
  *
