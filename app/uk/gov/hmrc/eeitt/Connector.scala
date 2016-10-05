@@ -82,10 +82,8 @@ trait DfsConnector {
 object DfsConnector extends DfsConnector with ServicesConfig {
   override val http: WSPost = WSHttp
   override lazy val url: String = {
-    val formTypeRef: String =
-      Play.configuration.getString(s"$env.dfs-frontend.formtype").
-        getOrElse(throw new Exception(s"env.dfs-frontend.formtype is missing"))
-    s"${baseUrl("dfs-frontend")}/forms/form/$formTypeRef/new"
+    val formTypeRef: String = "penalty-enquiry"
+    s"http://localhost:9090/forms/form/$formTypeRef/new"
   }
   override val logger = Logger
 }
@@ -120,7 +118,7 @@ object DfsRequestBody {
     displayFormAsPartial = true,
     saveEnabled = true,
     afterSubmissionURI = returnUrl,
-    secureMailboxURL = SecureMessageUrl.mailboxUrl(utr)
+    secureMailboxURL = ""
   )
 }
 
