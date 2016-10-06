@@ -27,6 +27,7 @@ import uk.gov.hmrc.eeitt.Forms.CaptureForm
 import uk.gov.hmrc.eeitt.Models._
 import uk.gov.hmrc.eeitt.views.html.displayresponse
 import uk.gov.hmrc.eeitt.views.html.helloworld.hello_world
+import uk.gov.hmrc.eeitt.views.html.startpage
 import uk.gov.hmrc.play.http.{HttpGet, HttpPost}
 
 import scala.concurrent.{Await, Future}
@@ -50,7 +51,7 @@ object InputController extends Controller {
     CaptureForm.userInput.bindFromRequest.fold(
       formWithErrors => Future.successful(Ok(hello_world(formWithErrors))),
       input => {
-        val futureJsUserArray = WS.url("http://localhost:9000/main/registration/details?" + input.typeOf + input.credential).get()
+        val futureJsUserArray = WS.url("http://localhost:9092/main/registration/details?" + input.typeOf + input.credential).get()
 
         futureJsUserArray.map { jsResponse =>
           val successResponse = Json.parse(jsResponse.body).validate[SuccessResponse]
@@ -63,6 +64,8 @@ object InputController extends Controller {
       }
     )
   }
+
+
 }
 
 

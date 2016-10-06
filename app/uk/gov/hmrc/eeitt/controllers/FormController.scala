@@ -15,14 +15,16 @@
  */
 
 package uk.gov.hmrc.eeitt.controllers
+
 import play.api.Play.current
 import play.api.libs.ws
 import play.api.libs.ws.{WS, WSResponse}
 import play.api.mvc.{Action, Controller}
-import uk.gov.hmrc.eeitt.views.html.dfsform
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.eeitt.views.html.{dfsform, startpage}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+
 /**
   * Created by harrison on 27/09/16.
   */
@@ -31,8 +33,13 @@ object FormController extends Controller {
   def wsAction = Action.async { implicit request =>
 
 
-     WS.url("http://localhost:9000/forms/form/claim-a-tax-refund/new").get().map { response =>
+    WS.url("http://localhost:9000/forms/form/claim-a-tax-refund/new").get().map { response =>
       Ok(dfsform(response.body))
     }
+  }
+
+
+  def showStartPage = Action.async { implicit request =>
+    Future.successful(Ok(startpage()))
   }
 }

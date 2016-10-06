@@ -1,9 +1,10 @@
 
-@(successResponse: uk.gov.hmrc.eeitt.Models.SuccessResponse)
+@(successResponse: uk.gov.hmrc.eeitt.Models.SuccessResponse)(implicit request: Request[_])
 @import uk.gov.hmrc.eeitt.Models.SuccessResponse
 
 
 @import helper._
+@uk.gov.hmrc.eeitt.views.html.main_template(title = "EEITT", bodyClasses = None) {
     <body>
         <h1>Land fill tax</h1>
         <p>SAP Number:@successResponse.sapNumber</p>
@@ -13,3 +14,4 @@
 
     </body>
 
+}

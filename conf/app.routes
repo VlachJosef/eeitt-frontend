@@ -9,3 +9,4 @@ GET         /somepage                              uk.gov.hmrc.eeitt.controllers
 GET         /assets                                controllers.Assets.at(path="/public/javascripts", file="jquery-3.1.0.min.js")
 GET         /localform                                  controllers.Assets.at(path="/public", file="form.html")
 GET         /dfsform                               uk.gov.hmrc.eeitt.controllers.FormController.wsAction
+GET         /startpage                             uk.gov.hmrc.eeitt.controllers.FormController.showStartPage
