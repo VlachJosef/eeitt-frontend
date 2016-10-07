@@ -1,5 +1,6 @@
 # microservice specific routes
 GET         /testpage                              uk.gov.hmrc.eeitt.controllers.TestPageController.testPage
+GET         /testpage2                              uk.gov.hmrc.eeitt.controllers.TestPageController.testPage
 GET         /hello-world                           uk.gov.hmrc.eeitt.controllers.InputController.helloWorld
 POST        /hello-world                           uk.gov.hmrc.eeitt.controllers.InputController.asyncAction()
 
