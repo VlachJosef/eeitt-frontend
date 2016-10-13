@@ -16,17 +16,17 @@
 
 package uk.gov.hmrc.eeitt
 
-import play.api.Play.current
 import play.api.libs.json._
-import play.api.{Logger, LoggerLike, Play}
+import play.api.{Logger, LoggerLike}
 import play.twirl.api.Html
-import uk.gov.hmrc.eeitt.WSHttp
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http.ws.WSPost
 import uk.gov.hmrc.play.partials.{HeaderCarrierForPartials, HtmlPartial}
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+
 
 
 /* Created by harrison on 15/09/16.
@@ -64,7 +64,8 @@ trait DfsConnector {
 
     implicit val foo = hc.toHeaderCarrier
 
-    http.POST[DfsRequestBody, HtmlPartial](url, DfsRequestBody.create(returnUrl, utr)).
+    val body = DfsRequestBody.create(returnUrl, utr)
+    http.POST[DfsRequestBody, HtmlPartial](url, body).
       map {
         case HtmlPartial.Success(_, content) => content
         case HtmlPartial.Failure(Some(status), body) =>
@@ -79,12 +80,16 @@ trait DfsConnector {
 }
 
 
+
+
 object DfsConnector extends DfsConnector with ServicesConfig {
   override val http: WSPost = WSHttp
+
   override lazy val url: String = {
     val formTypeRef: String = "penalty-enquiry"
     s"http://localhost:9090/forms/form/$formTypeRef/new"
   }
+
   override val logger = Logger
 }
 
