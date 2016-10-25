@@ -1,14 +1,1 @@
 # microservice specific routes
-GET         /testpage           uk.gov.hmrc.eeitt.controllers.TestPageController.testPage
-GET         /testpage2          uk.gov.hmrc.eeitt.controllers.TestPageController.testPage
-GET         /hello-world        uk.gov.hmrc.eeitt.controllers.InputController.helloWorld
-POST        /hello-world        uk.gov.hmrc.eeitt.controllers.InputController.asyncAction()
-
-GET         /dataPage           uk.gov.hmrc.eeitt.controllers.InputController.asyncAction
-
-GET         /somepage           uk.gov.hmrc.eeitt.controllers.TestPageController.aPage
-GET         /assets             controllers.Assets.at(path="/public/javascripts", file="jquery-3.1.0.min.js")
-GET         /localform          controllers.Assets.at(path="/public", file="form.html")
-GET         /dfsform            uk.gov.hmrc.eeitt.controllers.FormController.wsAction
-GET         /apd-form                                  controllers.Assets.at(path="/public", file="air-passenger-duty.html")
-
