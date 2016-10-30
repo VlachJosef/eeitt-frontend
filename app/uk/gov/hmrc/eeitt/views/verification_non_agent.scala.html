@@ -1,0 +1,48 @@
+@import uk.gov.hmrc.eeitt.models.EnrollmentDetails
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+
+@(enrollmentForm: Form[EnrollmentDetails], callbackUrl: String)(implicit request: Request[_], authContext: AuthContext)
+
+@import views.html.helper.inputText
+@import uk.gov.hmrc.play.views.html.helpers.inputRadioGroup
+
+@main_template("Enrollment Verification", loginStatus = Some(login_status(authContext))) {
+
+  <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitEnrollmentDetails(callbackUrl).url method="POST">
+    <h1>Enrollment Verification</h1>
+
+    @csrf_token()
+
+    @enrollmentForm.globalError.map { error =>
+      <div class="flash error-summary error-summary--show">
+        @error.message
+      </div>
+    }
+
+    @inputText(
+      enrollmentForm("registrationNumber"),
+      '_label -> "Registration Number",
+      '_labelClass -> "block-label",
+      'class -> "input--fullwidth form-control"
+    )
+
+    @inputRadioGroup(
+      enrollmentForm("livesInTheUk"),
+      Seq(("true", "Yes"), ("false", "No")),
+      '_groupClass -> "form-group inline",
+      '_labelClass -> "block-label",
+      '_legend -> "Do you live in the UK?"
+    )
+
+    @inputText(
+      enrollmentForm("postcode"),
+      '_label -> "Postcode",
+      '_labelClass -> "block-label",
+      'class -> "input--fullwidth form-control"
+    )
+
+    <input type="submit" class="button" value="Submit" />
+
+  </form>
+
+}

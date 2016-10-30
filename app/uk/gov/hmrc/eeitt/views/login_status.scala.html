@@ -1,0 +1,31 @@
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@(authContext: AuthContext)
+
+@import uk.gov.hmrc.play.views.formatting.Dates.formatEasyReadingTimestamp
+@import uk.gov.hmrc.play.views.html.layouts
+
+<div id="lastlogin" class="service-info__help">
+  <p>
+    @agentOrUserDisplayName = {
+      @authContext.attorney.map(_.name).getOrElse {
+        @authContext.principal.name.getOrElse("Name not available")
+      }
+    }
+
+    @authContext.user.previouslyLoggedInAt.map { date =>
+      @Messages(
+        "common.previousLoginTime",
+        agentOrUserDisplayName,
+        formatEasyReadingTimestamp(authContext.user.previouslyLoggedInAt, "")
+      )
+    }.getOrElse {
+      @Messages(
+        "common.firstlogin",
+        agentOrUserDisplayName,
+        formatEasyReadingTimestamp(authContext.user.previouslyLoggedInAt, "")
+      )
+    }
+    <br><a id="logOutStatusHref" href="@uk.gov.hmrc.eeitt.controllers.routes.SignOutController.signOut().url">Sign out (should we allow??)</a>
+  </p>
+
+</div>

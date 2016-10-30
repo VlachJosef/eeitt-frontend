@@ -1,0 +1,3 @@
+@()(implicit request: Request[_])
+
+@{ play.filters.csrf.CSRF.getToken(request).map { token => views.html.helper.CSRF.formField(token) } }
