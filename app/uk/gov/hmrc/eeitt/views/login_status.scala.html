@@ -16,13 +16,12 @@
       @Messages(
         "common.previousLoginTime",
         agentOrUserDisplayName,
-        formatEasyReadingTimestamp(authContext.user.previouslyLoggedInAt, "")
+        formatEasyReadingTimestamp(Some(date), "")
       )
     }.getOrElse {
       @Messages(
         "common.firstlogin",
-        agentOrUserDisplayName,
-        formatEasyReadingTimestamp(authContext.user.previouslyLoggedInAt, "")
+        agentOrUserDisplayName
       )
     }
     <br><a id="logOutStatusHref" href="@uk.gov.hmrc.eeitt.controllers.routes.SignOutController.signOut().url">Sign out (should we allow??)</a>
