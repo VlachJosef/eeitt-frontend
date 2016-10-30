@@ -3,12 +3,10 @@
   contentHeader: Option[Html] = None,
   bodyClasses: Option[String] = None,
   mainClass: Option[String] = None,
+  loginStatus: Option[Html] = None,
   scriptElem: Option[Html] = None)(mainContent: Html)(implicit request : Request[_])
 
 @import uk.gov.hmrc.play.views.html.layouts
-
-
-@serviceInfoContent = {}
 
 @sidebar = {
     @if(sidebarLinks.isDefined) {
@@ -24,7 +22,7 @@
                sidebar = sidebar,
                contentHeader = contentHeader,
                mainContent = layouts.article(mainContent),
-               serviceInfoContent = serviceInfoContent,
+               serviceInfoContent = loginStatus.getOrElse(HtmlFormat.empty),
                scriptElem = scriptElem
 )
 
