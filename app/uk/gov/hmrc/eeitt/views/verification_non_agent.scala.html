@@ -26,14 +26,6 @@
       'class -> "input--fullwidth form-control"
     )
 
-    @inputRadioGroup(
-      enrollmentForm("livesInTheUk"),
-      Seq(("true", "Yes"), ("false", "No")),
-      '_groupClass -> "form-group inline",
-      '_labelClass -> "block-label",
-      '_legend -> "Do you live in the UK?"
-    )
-
     @inputText(
       enrollmentForm("postcode"),
       '_label -> "Postcode",

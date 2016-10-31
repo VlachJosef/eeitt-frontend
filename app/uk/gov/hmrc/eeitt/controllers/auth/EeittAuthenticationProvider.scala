@@ -19,15 +19,16 @@ package uk.gov.hmrc.eeitt.controllers.auth
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.eeitt.FrontendAppConfig
+import uk.gov.hmrc.eeitt.controllers.{AsyncUserRequest, UserRequest}
 import uk.gov.hmrc.play.frontend.auth._
 
 import scala.concurrent.Future
 
 trait EeittAuth { self: UserActions =>
-  def AuthenticatedAction(r: AuthContext => Request[AnyContent] => Result) =
+  def AuthenticatedAction(r: UserRequest) =
     AuthenticatedBy(EeittAuthenticationProvider, EeittPageVisibilityPredicate)(r)
 
-  def AsyncAuthenticatedAction(r: AuthContext => Request[AnyContent] => Future[Result]) =
+  def AsyncAuthenticatedAction(r: AsyncUserRequest) =
     AuthenticatedBy(EeittAuthenticationProvider, EeittPageVisibilityPredicate).async(r)
 }
 
