@@ -14,18 +14,43 @@
  * limitations under the License.
  */
 
+import java.io.File
+import java.util.Date
+
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{Matchers, FlatSpec}
 
-import com.github.tomakehurst._
+import play.api.libs.concurrent.Promise
+import play.api.libs.iteratee.{Iteratee, Enumerator}
 
-class TestSpec extends FlatSpec with Matchers {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
+class TestSpec extends FlatSpec with Matchers with ScalaFutures {
 
   "blah" should "work" in {
 
 
+      val enum = Enumerator.repeatM(
+        Promise.timeout(
+          "current time %s".format(new Date()), 5
+        )
+      )
 
-    1 shouldBe(1)
-    2 shouldBe(2)
+
+      val iteratee: Iteratee[Int, Int] = Iteratee.fold(0)(_+_)
+      val iteratee2: Iteratee[String, String] = Iteratee.fold("")(_+_)
+
+      println(Enumerator[Int](1, 2, 3, 4).run(iteratee).futureValue)
+      println(Enumerator[Int](5, 2, 3, 4).run(iteratee).futureValue)
+      println(enum.run(iteratee2).futureValue)
+
+
+
+
+
+
+//      Enumerator.fromFile(new File("myfile.txt"))
   }
 
 

@@ -2,6 +2,8 @@
 GET         /testpage                              uk.gov.hmrc.eeitt.controllers.TestPageController.testPage
 GET         /testpage2                              uk.gov.hmrc.eeitt.controllers.TestPageController.testPage
 GET         /hello-world                           uk.gov.hmrc.eeitt.controllers.InputController.helloWorld
+GET         /hello-world2                          uk.gov.hmrc.eeitt.controllers.InputController.helloWorld2
+GET         /landingPage                           uk.gov.hmrc.eeitt.controllers.InputController.helloWorld2
 POST        /hello-world                           uk.gov.hmrc.eeitt.controllers.InputController.asyncAction()
 
 GET         /dataPage                              uk.gov.hmrc.eeitt.controllers.InputController.asyncAction
@@ -10,3 +12,6 @@ GET         /somepage                              uk.gov.hmrc.eeitt.controllers
 GET         /assets                                controllers.Assets.at(path="/public/javascripts", file="jquery-3.1.0.min.js")
 GET         /localform                                  controllers.Assets.at(path="/public", file="form.html")
 GET         /dfsform                               uk.gov.hmrc.eeitt.controllers.FormController.wsAction
+
+
+GET         /unauthorised                          uk.gov.hmrc.eeitt.controllers.ApplicationController.unauthorised

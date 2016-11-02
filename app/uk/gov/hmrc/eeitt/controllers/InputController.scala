@@ -17,12 +17,19 @@
 package uk.gov.hmrc.eeitt.controllers
 
 import play.Logger
+import uk.gov.hmrc.eeitt.WSHttp
+import uk.gov.hmrc.eeitt.controllers.auth.EeittRegime
+import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
+import uk.gov.hmrc.play.frontend.auth.{IdentityConfidencePredicate, AuthContext, Actions}
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play.current
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.libs.ws.WS
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{BodyParser, Request, Action, Controller}
 import uk.gov.hmrc.eeitt.Forms.CaptureForm
 import uk.gov.hmrc.eeitt.Models._
 import uk.gov.hmrc.eeitt.views.html.displayresponse
@@ -40,10 +47,31 @@ trait ConnectorWIthHttpValues {
 
   }
 }
-object InputController extends Controller {
+
+
+object EeittFrontendAuthConnector extends AuthConnector {
+  val serviceUrl = "http://localhost:8500"
+  lazy val http = WSHttp
+}
+
+object InputController extends FrontendController with Actions {
+
+  val authConnector = EeittFrontendAuthConnector
+
+
+  val pageVisibilityPredicate = new IdentityConfidencePredicate(ConfidenceLevel.L50, Future.successful(Forbidden))
+
   val helloWorld = Action.async { implicit request =>
     Future.successful(Ok(hello_world(CaptureForm.userInput)))
   }
+
+  val helloWorld2 = new AuthenticatedBy(EeittRegime.authenticationType, Some(EeittRegime), pageVisibilityPredicate).async {
+    implicit authContext: AuthContext =>
+      implicit request =>
+        println("***********affinity group in session" + request.session("affinityGroup"))
+    Future.successful(Ok(hello_world(CaptureForm.userInput)))
+  }
+
 
 
   def asyncAction = Action.async { implicit request =>
