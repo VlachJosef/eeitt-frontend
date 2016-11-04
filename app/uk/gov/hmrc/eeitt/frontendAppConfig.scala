@@ -20,11 +20,13 @@ import play.api.Play.{configuration, current}
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {
-  val assetsPrefix: String
-  val analyticsToken: String
-  val analyticsHost: String
-  val reportAProblemPartialUrl: String
-  val reportAProblemNonJSUrl: String
+  def assetsPrefix: String
+  def analyticsToken: String
+  def analyticsHost: String
+  def reportAProblemPartialUrl: String
+  def reportAProblemNonJSUrl: String
+  def governmentGatewaySignInUrl: String
+  def eeittFrontendBaseUrl: String
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -39,4 +41,12 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val analyticsHost = loadConfig(s"google-analytics.host")
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+
+//  override lazy val governmentGatewaySignInUrl = configuration.getString("government-gateway-sign-in-url").getOrElse("")
+  override lazy val governmentGatewaySignInUrl = "http://localhost:9025/gg/sign-in"
+
+
+  // this will be empty in non-local environments
+  override lazy val eeittFrontendBaseUrl = configuration.getString("eeitt-frontend-base-url").getOrElse("")
+
 }

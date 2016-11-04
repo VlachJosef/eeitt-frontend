@@ -20,7 +20,7 @@ private object AppDependencies {
   private val govukTemplateVersion = "4.0.0"
   private val playUiVersion = "4.16.0"
   private val playPartialsVersion = "4.6.0"
-  private val playAuthorisedFrontendVersion = "5.7.0"
+  private val playAuthorisedFrontendVersion = "5.8.0"
   private val playConfigVersion = "2.1.0"
   private val hmrcTestVersion = "1.8.0"
   private val scalaTestVersion = "2.2.6"
@@ -51,7 +51,8 @@ private object AppDependencies {
         "org.pegdown" % "pegdown" % pegdownVersion % scope,
         "org.jsoup" % "jsoup" % "1.8.1" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope,
-        "com.github.tomakehurst" % "wiremock" % "2.1.12" % scope
+        "com.github.tomakehurst" % "wiremock" % "2.1.12" % scope,
+        "org.scalatestplus" % "play_2.11" % "1.2.0" % scope
       )
     }.test
   }
