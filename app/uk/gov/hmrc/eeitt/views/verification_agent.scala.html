@@ -1,10 +1,8 @@
 @import uk.gov.hmrc.eeitt.models.AgentEnrollmentDetails
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import uk.gov.hmrc.play.views.html.helpers._
 
 @(enrollmentForm: Form[AgentEnrollmentDetails], callbackUrl: String)(implicit request: Request[_], authContext: AuthContext)
-
-@import views.html.helper.inputText
-@import uk.gov.hmrc.play.views.html.helpers.inputRadioGroup
 
 @sidebarContent = {
   <section id="side-bar-section" class="section--branded section--blue-top">
@@ -12,19 +10,18 @@
   </section>
 }
 
-@* @main_template("Enrollment Verification", loginStatus = Some(login_status(authContext)), sidebarLinks = Some(sidebarLinks)) { *@
 @main_template("Enrollment Verification", sidebarLinks = Some(sidebarContent)) {
   <header class="page-header">
     <h1>Register to submit forms online</h1>
   </header>
 
   <p>
-    Enter your client's 15-digit Air Passenger Duty registration number and business postcode
+    Enter your agent reference number and business postcode.
   </p>
 
-  <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl).url method="POST"¡>
+  <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl).url method="POST" class="js-form" autocomplete="off" novalidate="novalidate">
 
-    @csrf_token()
+  @csrf_token()
 
     @enrollmentForm.globalError.map { error =>
       <div class="flash error-summary error-summary--show">
@@ -32,59 +29,37 @@
       </div>
     }
 
-    <fieldset class="form-field-group">
+    <fieldset class="form-field-group@if(enrollmentForm("arn").hasErrors){ form-field-group--error}">
       <label for="arn">
         Agent Reference Number
-        <span
-          id="arn-error-message"
-          class="error-notification"
-          data-input-name="arn">
-        </span>
+          @errorInline("arn", "Please enter your agent reference number", Seq("optional-extra-css-classes"))
         <input
           type="text"
           name="arn"
           id="arn"
+          value="@enrollmentForm("arn").value"
           class="form-control form-control--block"
           required
-          pattern="^[a-zA-Z0-9]{3}$"
-          data-msg-pattern="Please enter a valid registration number."
-          data-msg-required="Please enter a valid registration number"
+          data-msg-required="Please enter a valid reference number"
         >
       </label>
     </fieldset>
 
-    <fieldset for="postcode" class="form-field-group">
+    <fieldset class="form-field-group@if(enrollmentForm("postcode").hasErrors){ form-field-group--error}">
       <label>
         Agent's business postcode
-        <span
-          id="postcode-error-message"
-          class="error-notification"
-          data-input-name="postcode">
-        </span>
+          @errorInline("postcode", "Please enter your postcode", Seq("optional-extra-css-classes"))
         <input
           type="text"
           name="postcode"
           id="postcode"
+          value="@enrollmentForm("postcode").value"
           class="form-control form-control--block"
           required
           data-msg-required="Please enter a postcode."
         >
       </label>
     </fieldset>
-
-@*
-      @inputText(
-        enrollmentForm("arn"),
-        '_label -> "Agent Reference Number",
-        'class -> "form-control form-control--block"
-      )
-
-      @inputText(
-        enrollmentForm("postcode"),
-        '_label -> "Postcode",
-        'class -> "form-control form-control--block"
-      )
-*@
 
     <input type="submit" class="button" value="Submit" />
 

@@ -55,20 +55,20 @@ object EeittConnector extends EeittConnector with ServicesConfig {
   // todo: remove mocked call once back-end is ready
   override def registerNonAgent(enrollmentDetails: EnrollmentDetails)
                                (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-    if (enrollmentDetails.registrationNumber == "foo") {
+    if (enrollmentDetails.registrationNumber == "AP1234567891111") {
       Future.successful(VerificationResult(None))
     } else {
-      Future.successful(VerificationResult(Some("For testing the only allowed registration number is 'foo'")))
+      Future.successful(VerificationResult(Some("For testing the only allowed registration number is 'AP1234567891111'")))
     }
   }
 
   // todo: remove mocked call once back-end is ready
   override def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)
                             (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-    if (agentEnrollmentDetails.arn == "foo") {
+    if (agentEnrollmentDetails.arn == "123456789111111") {
       Future.successful(VerificationResult(None))
     } else {
-      Future.successful(VerificationResult(Some("For testing the only allowed ARN number is 'foo'")))
+      Future.successful(VerificationResult(Some("For testing the only allowed ARN number is '123456789111111'")))
     }
   }
 }

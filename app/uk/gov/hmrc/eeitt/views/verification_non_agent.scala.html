@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.eeitt.models.EnrollmentDetails
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import uk.gov.hmrc.play.views.html.helpers._
 
 @(enrollmentForm: Form[EnrollmentDetails], callbackUrl: String)(implicit request: Request[_], authContext: AuthContext)
 
@@ -8,8 +9,14 @@
 
 @main_template("Enrollment Verification", loginStatus = Some(login_status(authContext))) {
 
-  <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitEnrollmentDetails(callbackUrl).url method="POST">
-    <h1>Enrollment Verification</h1>
+  <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitEnrollmentDetails(callbackUrl).url method="POST" class="js-form" autocomplete="off" novalidate="novalidate">
+    <header class="page-header">
+      <h1>Register to submit forms online</h1>
+    </header>
+
+    <p>
+      Enter your 15-digit Air Passenger Duty registration number and business postcode.
+    </p>
 
     @csrf_token()
 
@@ -19,19 +26,39 @@
       </div>
     }
 
-    @inputText(
-      enrollmentForm("registrationNumber"),
-      '_label -> "Registration Number",
-      '_labelClass -> "block-label",
-      'class -> "input--fullwidth form-control"
-    )
+    <fieldset class="form-field-group@if(enrollmentForm("registrationNumber").hasErrors){ form-field-group--error}">
+      <label for="arn">
+        Registration Number
+        @errorInline("registrationNumber", "Please enter a valid registration number", Seq("optional-extra-css-classes"))
+        <input
+        type="text"
+        name="registrationNumber"
+        id="registrationNumber"
+        value="@enrollmentForm("registrationNumber").value"
+        class="form-control form-control--block"
+        required
+        pattern="^[a-zA-Z0-9]{15}$"
+        data-msg-pattern="Please enter a valid reference number."
+        data-msg-required="Please enter a valid reference number"
+        >
+      </label>
+    </fieldset>
 
-    @inputText(
-      enrollmentForm("postcode"),
-      '_label -> "Postcode",
-      '_labelClass -> "block-label",
-      'class -> "input--fullwidth form-control"
-    )
+    <fieldset class="form-field-group@if(enrollmentForm("postcode").hasErrors){ form-field-group--error}">
+      <label>
+        Business postcode
+        @errorInline("postcode", "Please enter your postcode", Seq("optional-extra-css-classes"))
+        <input
+        type="text"
+        name="postcode"
+        id="postcode"
+        value="@enrollmentForm("postcode").value"
+        class="form-control form-control--block"
+        required
+        data-msg-required="Please enter a postcode."
+        >
+      </label>
+    </fieldset>
 
     <input type="submit" class="button" value="Submit" />
 
