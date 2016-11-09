@@ -2,7 +2,7 @@
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
 @import uk.gov.hmrc.play.views.html.helpers._
 
-@(enrollmentForm: Form[EnrollmentDetails], callbackUrl: String)(implicit request: Request[_], authContext: AuthContext)
+@(enrollmentForm: Form[EnrollmentDetails], callbackUrl: String, groupId: String)(implicit request: Request[_], authContext: AuthContext)
 
 @sidebarContent = {
   <section id="side-bar-section" class="section--branded section--blue-top">
@@ -62,6 +62,8 @@
         >
       </label>
     </fieldset>
+
+    <input type="hidden" name="groupId" value="@groupId" />
 
     <input type="submit" class="button" value="Submit" />
 

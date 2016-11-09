@@ -21,25 +21,29 @@ import play.api.data.Forms._
 import play.api.libs.json.Json
 
 case class EnrollmentDetails(registrationNumber: String,
-                             postcode: String)
+                             postcode: String,
+                             groupId: String)
 
 object EnrollmentDetails {
   implicit val formats = Json.format[EnrollmentDetails]
 
   val form = Form(mapping(
     "registrationNumber" -> text,
-    "postcode" -> text
+    "postcode" -> text,
+    "groupId" -> text
   )(EnrollmentDetails.apply)(EnrollmentDetails.unapply))
 }
 
 case class AgentEnrollmentDetails(arn: String,
-                                  postcode: String)
+                                  postcode: String,
+                                  groupId: String)
 
 object AgentEnrollmentDetails {
   implicit val formats = Json.format[AgentEnrollmentDetails]
 
   val form = Form(mapping(
     "arn" -> text,
-    "postcode" -> text
+    "postcode" -> text,
+    "groupId" -> text
   )(AgentEnrollmentDetails.apply)(AgentEnrollmentDetails.unapply))
 }

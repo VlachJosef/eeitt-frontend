@@ -58,7 +58,7 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
       val controller = enrollmentVerificationController(businessUser, successfulVerificationOfFormData)
       val request = FakeRequest().withFormUrlEncodedBody(
         "registrationNumber" -> "foo",
-        "livesInTheUk" -> "false",
+        "groupId" -> "test-group-id",
         "postcode" -> "postcode"
       )
       val callbackUrl = "/form/inside/dfs"
@@ -73,7 +73,7 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
       val controller = enrollmentVerificationController(businessUser, failedVerificationOfFormData)
       val request = FakeRequest().withFormUrlEncodedBody(
         "registrationNumber" -> "foo",
-        "livesInTheUk" -> "false",
+        "groupId" -> "test-group-id",
         "postcode" -> "postcode"
       )
       val result = controller.submitEnrollmentDetails("/form/inside/dfs")(request).futureValue
