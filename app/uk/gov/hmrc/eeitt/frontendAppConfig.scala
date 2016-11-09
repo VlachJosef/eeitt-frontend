@@ -42,8 +42,8 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemPartialUrl = s"$contactHost/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
-//  override lazy val governmentGatewaySignInUrl = configuration.getString("government-gateway-sign-in-url").getOrElse("")
-  override lazy val governmentGatewaySignInUrl = "http://localhost:9025/gg/sign-in"
+  override lazy val governmentGatewaySignInUrl = configuration.getString("government-gateway-sign-in-url").getOrElse("")
+//  override lazy val governmentGatewaySignInUrl = "http://localhost:9025/gg/sign-in"
 
 
   // this will be empty in non-local environments

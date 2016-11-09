@@ -19,6 +19,7 @@ package uk.gov.hmrc.eeitt.connectors
 import play.api.libs.json.Json
 import uk.gov.hmrc.eeitt.WSHttp
 import uk.gov.hmrc.eeitt.models.{AgentEnrollmentDetails, EnrollmentDetails}
+import uk.gov.hmrc.eeitt.utils.FuturesLogging.withLoggingFutures
 import uk.gov.hmrc.play.config.ServicesConfig
 
 case class VerificationResult(error: Option[String])
@@ -38,39 +39,24 @@ trait EeittConnector {
 
   def registerNonAgent(enrollmentDetails: EnrollmentDetails)
                       (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-    httpPost.POST[EnrollmentDetails, VerificationResult](eeittUrl, enrollmentDetails)
+    withLoggingFutures {
+      httpPost.POST[EnrollmentDetails, VerificationResult](eeittUrl + "register", enrollmentDetails)
+    }
   }
 
   def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)
                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-    httpPost.POST[AgentEnrollmentDetails, VerificationResult](eeittUrl, agentEnrollmentDetails)
+    withLoggingFutures {
+      httpPost.POST[AgentEnrollmentDetails, VerificationResult](eeittUrl + "register-agent", agentEnrollmentDetails)
+    }
   }
 }
 
 object EeittConnector extends EeittConnector with ServicesConfig {
   lazy val httpPost = WSHttp
-
-  def eeittUrl: String = s"${baseUrl("eeitt")}/eeitt/verify"
-
-  // todo: remove mocked call once back-end is ready
-  override def registerNonAgent(enrollmentDetails: EnrollmentDetails)
-                               (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-    if (enrollmentDetails.registrationNumber == "AP1234567891111") {
-      Future.successful(VerificationResult(None))
-    } else {
-      Future.successful(VerificationResult(Some("For testing the only allowed registration number is 'AP1234567891111'")))
-    }
-  }
-
-  // todo: remove mocked call once back-end is ready
-  override def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-    if (agentEnrollmentDetails.arn == "123456789111111") {
-      Future.successful(VerificationResult(None))
-    } else {
-      Future.successful(VerificationResult(Some("For testing the only allowed ARN number is '123456789111111'")))
-    }
-  }
+  def eeittUrl: String = s"${baseUrl("eeitt")}/eeitt/"
 }
+
+
 
 

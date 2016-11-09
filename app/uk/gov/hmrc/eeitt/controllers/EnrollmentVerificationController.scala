@@ -35,47 +35,53 @@ trait EnrollmentVerificationController extends FrontendController with Actions {
     implicit authContext => implicit request =>
       authConnector.getUserDetails[UserDetails](authContext).map {
         case UserDetails(NonAgent, groupIdentifier) =>
-          Ok(verification_non_agent(EnrollmentDetails.form, callbackUrl))
+          Ok(verification_non_agent(EnrollmentDetails.form, callbackUrl, groupIdentifier))
 
         case UserDetails(Agent, groupIdentifier) =>
-          Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl))
+          Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl, groupIdentifier))
       }
   }
 
   def submitEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction {
     implicit authContext => implicit request =>
-      EnrollmentDetails.form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(verification_non_agent(formWithErrors, callbackUrl))
-          ),
-        formData =>
-          eeittConnector.registerNonAgent(formData).map {
-            case VerificationResult(Some(errorMsg)) =>
-              val formWithErrors = EnrollmentDetails.form.withGlobalError(errorMsg)
-              BadRequest(verification_non_agent(formWithErrors, callbackUrl))
-            case VerificationResult(noErrors) =>
-              Redirect(callbackUrl)
-          }
-      )
+      authConnector.getUserDetails[UserDetails](authContext).flatMap {
+        case UserDetails(_, groupIdentifier) =>
+        EnrollmentDetails.form.bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(verification_non_agent(formWithErrors, callbackUrl, groupIdentifier))
+            ),
+          formData =>
+            eeittConnector.registerNonAgent(formData).map {
+              case VerificationResult(Some(errorMsg)) =>
+                val formWithErrors = EnrollmentDetails.form.withGlobalError(errorMsg)
+                BadRequest(verification_non_agent(formWithErrors, callbackUrl, groupIdentifier))
+              case VerificationResult(noErrors) =>
+                Redirect(callbackUrl)
+            }
+        )
+      }
   }
 
   def submitAgentEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction {
     implicit authContext => implicit request =>
-      AgentEnrollmentDetails.form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(verification_agent(formWithErrors, callbackUrl))
-          ),
-        formData =>
-          eeittConnector.registerAgent(formData).map {
-            case VerificationResult(Some(errorMsg)) =>
-              val formWithErrors = EnrollmentDetails.form.withGlobalError(errorMsg)
-              BadRequest(verification_non_agent(formWithErrors, callbackUrl))
-            case VerificationResult(noErrors) =>
-              Redirect(callbackUrl)
-          }
-      )
+      authConnector.getUserDetails[UserDetails](authContext).flatMap {
+        case UserDetails(_, groupIdentifier) =>
+          AgentEnrollmentDetails.form.bindFromRequest().fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(verification_agent(formWithErrors, callbackUrl, groupIdentifier))
+              ),
+            formData =>
+              eeittConnector.registerAgent(formData).map {
+                case VerificationResult(Some(errorMsg)) =>
+                  val formWithErrors = AgentEnrollmentDetails.form.withGlobalError(errorMsg)
+                  BadRequest(verification_agent(formWithErrors, callbackUrl, groupIdentifier))
+                case VerificationResult(noErrors) =>
+                  Redirect(callbackUrl)
+              }
+          )
+      }
   }
 
 }
