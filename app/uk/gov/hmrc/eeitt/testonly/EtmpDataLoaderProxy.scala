@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.eeitt.testonly
 
+import play.api.libs.ws.WSResponse
 import play.api.mvc.Action
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HttpResponse
 
 trait EtmpDataLoaderProxy extends FrontendController {
 
@@ -37,7 +37,7 @@ trait EtmpDataLoaderProxy extends FrontendController {
     }
   }
 
-  private def extractHeaders(resp: HttpResponse): List[(String, String)] =
+  private def extractHeaders(resp: WSResponse): List[(String, String)] =
     resp.allHeaders.map {
       case (key, values) => (key, values.mkString)
     }.toList
