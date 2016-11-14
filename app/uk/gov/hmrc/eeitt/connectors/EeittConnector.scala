@@ -16,12 +16,13 @@
 
 package uk.gov.hmrc.eeitt.connectors
 
+import play.api.Play.current
 import play.api.libs.json.Json
+import play.api.libs.ws.{WS, WSResponse}
 import uk.gov.hmrc.eeitt.WSHttp
 import uk.gov.hmrc.eeitt.models.{AgentEnrollmentDetails, EnrollmentDetails}
 import uk.gov.hmrc.eeitt.utils.FuturesLogging.withLoggingFutures
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.HttpResponse
 
 case class VerificationResult(error: Option[String])
 
@@ -52,17 +53,15 @@ trait EeittConnector {
     }
   }
 
-  def testOnlyLoadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def testOnlyLoadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
     withLoggingFutures {
-      val url = eeittUrl + "etmp-data/business-users"
-      httpPost.POSTString(url, source)
+      WS.url(eeittUrl + "etmp-data/business-users").post(source)
     }
   }
 
-  def testOnlyLoadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+  def testOnlyLoadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
     withLoggingFutures {
-      val url = eeittUrl + "etmp-data/agents"
-      httpPost.POSTString(url, source)
+      WS.url(eeittUrl + "etmp-data/agents").post(source)
     }
   }
 }
