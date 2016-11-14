@@ -21,6 +21,7 @@ import uk.gov.hmrc.eeitt.WSHttp
 import uk.gov.hmrc.eeitt.models.{AgentEnrollmentDetails, EnrollmentDetails}
 import uk.gov.hmrc.eeitt.utils.FuturesLogging.withLoggingFutures
 import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.HttpResponse
 
 case class VerificationResult(error: Option[String])
 
@@ -48,6 +49,20 @@ trait EeittConnector {
                    (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
     withLoggingFutures {
       httpPost.POST[AgentEnrollmentDetails, VerificationResult](eeittUrl + "register-agent", agentEnrollmentDetails)
+    }
+  }
+
+  def testOnlyLoadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+    withLoggingFutures {
+      val url = eeittUrl + "etmp-data/business-users"
+      httpPost.POSTString(url, source)
+    }
+  }
+
+  def testOnlyLoadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
+    withLoggingFutures {
+      val url = eeittUrl + "etmp-data/agents"
+      httpPost.POSTString(url, source)
     }
   }
 }
