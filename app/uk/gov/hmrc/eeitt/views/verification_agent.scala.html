@@ -48,7 +48,7 @@
     <fieldset class="form-field-group@if(enrollmentForm("postcode").hasErrors){ form-field-group--error}">
       <label>
         Agent's business postcode
-          @errorInline("postcode", "Please enter your postcode", Seq("optional-extra-css-classes"))
+          @errorInline("postcode", "Please enter your business postcode", Seq("optional-extra-css-classes"))
         <input
           type="text"
           name="postcode"
