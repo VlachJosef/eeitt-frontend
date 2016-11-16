@@ -37,7 +37,7 @@ import scala.concurrent.duration._
 
 class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with ScalaFutures {
   "business user data upload" should {
-    "return response with UNAUTHORIZED status when basic auth is missing" in {
+    "return response with FORBIDDEN status when basic auth is missing" in {
       val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
@@ -48,20 +48,21 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val result: Result = proxy.loadBusinessUsers()(fakeRequest).futureValue
 
-      result.header.status shouldBe Status.UNAUTHORIZED
+      result.header.status shouldBe Status.FORBIDDEN
     }
   }
 
-  //  "business user data upload" should {
-  //    "return response with UNAUTH status when basic auth is incorrect" in {
-  //      ???
-  //    }
-  //  }
-  //  "business user data upload" should {
-  //    "return response with OK status and proxy the request when basic auth is present" in {
-  //      ???
-  //    }
-  //  }
+  "business user data upload" should {
+    "return response with UNAUTH status when basic auth is incorrect" in {
+      ???
+    }
+  }
+  "business user data upload" should {
+    "return response with OK status and proxy the request when basic auth is present" in {
+      ???
+    }
+  }
+
   def etmpDataLoaderProxy() = new EtmpDataLoaderProxy with TestEeittConnector
 
   trait TestEeittConnector {

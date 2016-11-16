@@ -25,6 +25,7 @@ import play.api.mvc.Request
 import play.api.{Application, Configuration, Play}
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.eeitt.infrastructure.{BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled}
 import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
 import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
@@ -38,9 +39,32 @@ object FrontendGlobal
   override val loggingFilter = LoggingFilter
   override val frontendAuditFilter = AuditFilter
 
+  var withBasicAuth: BasicAuth = _
+
+  def basicAuthConfiguration(config: Configuration): BasicAuthConfiguration = {
+    def getUsers(config: Configuration): List[User] = {
+      config.getString("basicAuth.authorizedUsers").map { s =>
+        s.split(";").flatMap(
+          user => {
+            user.split(":") match {
+              case Array(username, password) => Some(User(username, password))
+              case _ => None
+            }
+          }
+        ).toList
+      }.getOrElse(List.empty)
+    }
+
+    config.getBoolean("feature.basicAuthEnabled").getOrElse(false) match {
+      case true => BasicAuthEnabled(getUsers(config))
+      case false => BasicAuthDisabled
+    }
+  }
+
   override def onStart(app: Application) {
     super.onStart(app)
     ApplicationCrypto.verifyConfiguration()
+    withBasicAuth = BasicAuth(basicAuthConfiguration(app.configuration))
   }
 
   override def onLoadConfig(config: Configuration, path: File, classloader: ClassLoader, mode: Mode): Configuration = {
