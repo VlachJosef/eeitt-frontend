@@ -16,26 +16,28 @@
 
 package uk.gov.hmrc.eeitt.controllers
 
+import com.google.common.base.Charsets
+import com.google.common.io.BaseEncoding
 import com.ning.http.client.{FluentCaseInsensitiveStringsMap, Response}
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.tools.Durations
-import play.api.http.Status
-import play.api.libs.json.Json
+import play.api.http.{HeaderNames, Status}
 import play.api.libs.ws.ning.NingWSResponse
-import play.api.libs.ws.{WS, WSRequestHolder, WSResponse}
+import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.{FakeHeaders, FakeRequest}
-import uk.gov.hmrc.eeitt.connectors.{EeittConnector, VerificationResult}
+import uk.gov.hmrc.eeitt.connectors.EeittConnector
 import uk.gov.hmrc.eeitt.testonly.EtmpDataLoaderProxy
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpPost}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import play.api.mvc.Action
-import sun.font.CreatedFontTracker
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration._
 
 class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with ScalaFutures {
+
+  def basic64(s:String): String = {
+    BaseEncoding.base64().encode(s.getBytes(Charsets.UTF_8))
+  }
+
   "business user data upload" should {
     "return response with FORBIDDEN status when basic auth is missing" in {
       val proxy = etmpDataLoaderProxy()
@@ -53,13 +55,82 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
   }
 
   "business user data upload" should {
-    "return response with UNAUTH status when basic auth is incorrect" in {
-      ???
+    "return response with FORBIDDEN status when basic auth is incorrect" in {
+      val proxy = etmpDataLoaderProxy()
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/business-users", FakeHeaders(), body = "test data") {
+        override lazy val host = serverUrl
+      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
+
+      val result: Result = proxy.loadBusinessUsers()(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.FORBIDDEN
     }
   }
+
   "business user data upload" should {
-    "return response with OK status and proxy the request when basic auth is present" in {
-      ???
+    "return response with CREATED status from the proxy when basic auth is present" in {
+      val proxy = etmpDataLoaderProxy()
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/business-users", FakeHeaders(), body = "test data") {
+        override lazy val host = serverUrl
+      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
+
+      val result: Result = proxy.loadBusinessUsers()(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.CREATED
+    }
+  }
+
+  "agent data upload" should {
+    "return response with FORBIDDEN status when basic auth is missing" in {
+      val proxy = etmpDataLoaderProxy()
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/agents", FakeHeaders(), body = "test data") {
+        override lazy val host = serverUrl
+      }
+
+      val result: Result = proxy.loadAgents()(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.FORBIDDEN
+    }
+  }
+
+  "agent data upload" should {
+    "return response with FORBIDDEN status when basic auth is incorrect" in {
+      val proxy = etmpDataLoaderProxy()
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/agents", FakeHeaders(), body = "test business user data") {
+        override lazy val host = serverUrl
+      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
+
+      val result: Result = proxy.loadAgents()(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.FORBIDDEN
+    }
+  }
+
+  "agent data upload" should {
+    "return response with CREATED status from the proxy when basic auth is present" in {
+      val proxy = etmpDataLoaderProxy()
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/agents", FakeHeaders(), body = "agent test data") {
+        override lazy val host = serverUrl
+      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
+
+      val result: Result = proxy.loadAgents()(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.CREATED
     }
   }
 
@@ -72,7 +143,9 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
       def httpPost: HttpPost = ???
 
       override def testOnlyLoadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
-
+        Future.successful(testResponse(Status.CREATED))
+      }
+      override def testOnlyLoadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
         Future.successful(testResponse(Status.CREATED))
       }
     }

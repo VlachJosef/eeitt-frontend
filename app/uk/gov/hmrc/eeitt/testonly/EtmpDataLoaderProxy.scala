@@ -20,7 +20,6 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Action
 import uk.gov.hmrc.eeitt.FrontendGlobal
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
-import uk.gov.hmrc.eeitt.infrastructure.BasicAuth
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 trait EtmpDataLoaderProxy extends FrontendController {
@@ -36,8 +35,10 @@ trait EtmpDataLoaderProxy extends FrontendController {
   }
 
   def loadAgents = Action.async(parse.tolerantText) { implicit req =>
-    eeittConnector.testOnlyLoadAgents(req.body).map { resp =>
-      Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
+    FrontendGlobal.withBasicAuth {
+      eeittConnector.testOnlyLoadAgents(req.body).map { resp =>
+        Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
+      }
     }
   }
 
@@ -49,6 +50,5 @@ trait EtmpDataLoaderProxy extends FrontendController {
 }
 
 object EtmpDataLoaderProxy extends EtmpDataLoaderProxy {
-//  val withBasicAuth: BasicAuth,
   def eeittConnector = EeittConnector
 }
