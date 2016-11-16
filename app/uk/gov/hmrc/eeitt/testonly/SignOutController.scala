@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.eeitt.controllers
+package uk.gov.hmrc.eeitt.testonly
 
 import play.api.mvc.{Action, Controller}
 import play.twirl.api.Html
+import uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.displayVerificationPage
 
 object SignOutController extends Controller {
   def signOut = Action { request =>
     Ok(
       Html(
-        """
-         <p>Signed-out, thanks for doing business with HMRC!<p>
-
-         <a href="/eeitt-frontend/enrollment-verification?callbackUrl=bar">Try again</a>
+        s"""
+         <a href=${displayVerificationPage("http://bbc.co.uk")}>Try again</a>
         """
       )
     ).withNewSession

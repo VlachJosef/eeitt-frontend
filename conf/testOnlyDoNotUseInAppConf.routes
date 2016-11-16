@@ -11,6 +11,7 @@
 
 POST       /eeitt-auth/test-only/etmp-data/business-users             uk.gov.hmrc.eeitt.testonly.EtmpDataLoaderProxy.loadBusinessUsers
 POST       /eeitt-auth/test-only/etmp-data/agents                     uk.gov.hmrc.eeitt.testonly.EtmpDataLoaderProxy.loadAgents
+GET        /eeitt-auth/test-only/sign-out                            uk.gov.hmrc.eeitt.testonly.SignOutController.signOut()
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes
