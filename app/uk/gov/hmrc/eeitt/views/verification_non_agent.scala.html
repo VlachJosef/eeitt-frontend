@@ -40,9 +40,6 @@
         value="@enrollmentForm("registrationNumber").value"
         class="form-control form-control--block"
         required
-        pattern="^[a-zA-Z0-9]{15}$"
-        data-msg-pattern="Please enter a valid reference number."
-        data-msg-required="Please enter a valid reference number"
         >
       </label>
     </fieldset>
@@ -58,14 +55,15 @@
         value="@enrollmentForm("postcode").value"
         class="form-control form-control--block"
         required
-        data-msg-required="Please enter a postcode."
         >
       </label>
     </fieldset>
 
     <input type="hidden" name="groupId" value="@groupId" />
 
-    <input type="submit" class="button" value="Submit" />
+    <fieldset class="form-field-group">
+      <input id="accessForm" type="submit" class="button" value="Continue">
+    </fieldset>
 
   </form>
 
@@ -76,7 +74,7 @@
       <summary id="registration-link-container" role="button" aria-expanded="false">Don't have a registration number</summary>
       <div class="details__inner" id="details-content-1">
         <p class="panel-indent">
-          Don't have a registration number. <a href="https://www.gov.uk/topic/business-tax">Choose your relevant tax and then follow the registration instructions.</a>
+          <a href="https://www.gov.uk/topic/business-tax">Choose your relevant tax and then follow the registration instructions.</a>
         </p>
       </div>
     </details>
