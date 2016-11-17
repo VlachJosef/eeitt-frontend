@@ -26,7 +26,6 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.{FakeHeaders, FakeRequest}
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
-import uk.gov.hmrc.eeitt.testonly.EtmpDataLoaderProxy
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpPost}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
@@ -44,7 +43,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val serverUrl = "http://test.invalid:8000"
 
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/business-users", FakeHeaders(), body = "test data") {
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
       }
 
@@ -60,7 +59,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val serverUrl = "http://test.invalid:8000"
 
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/business-users", FakeHeaders(), body = "test data") {
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
 
@@ -76,7 +75,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val serverUrl = "http://test.invalid:8000"
 
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/business-users", FakeHeaders(), body = "test data") {
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
 
@@ -92,7 +91,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val serverUrl = "http://test.invalid:8000"
 
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/agents", FakeHeaders(), body = "test data") {
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/agents", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
       }
 
@@ -108,7 +107,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val serverUrl = "http://test.invalid:8000"
 
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/agents", FakeHeaders(), body = "test business user data") {
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/agents", FakeHeaders(), body = "test business user data") {
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
 
@@ -124,7 +123,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       val serverUrl = "http://test.invalid:8000"
 
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/test-only/etmp-data/agents", FakeHeaders(), body = "agent test data") {
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/agents", FakeHeaders(), body = "agent test data") {
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
 
@@ -142,10 +141,10 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       def httpPost: HttpPost = ???
 
-      override def testOnlyLoadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+      override def loadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
         Future.successful(testResponse(Status.CREATED))
       }
-      override def testOnlyLoadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+      override def loadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
         Future.successful(testResponse(Status.CREATED))
       }
     }

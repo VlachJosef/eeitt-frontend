@@ -5,3 +5,6 @@ POST    /enrollment-verification            uk.gov.hmrc.eeitt.controllers.Enroll
 POST    /enrollment-agent-verification      uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl)
 
 GET     /sign-out                           uk.gov.hmrc.eeitt.controllers.SignOutController.signOut()
+
+POST       /eeitt-auth/etmp-data/business-users             uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.loadBusinessUsers
+POST       /eeitt-auth/etmp-data/agents                     uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.loadAgents

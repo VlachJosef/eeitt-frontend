@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.eeitt.testonly
+package uk.gov.hmrc.eeitt.controllers
 
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Action
@@ -22,13 +22,16 @@ import uk.gov.hmrc.eeitt.FrontendGlobal
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
+/**
+  * Created by dave on 17/11/16.
+  */
 trait EtmpDataLoaderProxy extends FrontendController {
 
   def eeittConnector: EeittConnector
 
   def loadBusinessUsers = Action.async(parse.tolerantText) { implicit req =>
     FrontendGlobal.withBasicAuth {
-      eeittConnector.testOnlyLoadBusinessUsers(req.body).map { resp =>
+      eeittConnector.loadBusinessUsers(req.body).map { resp =>
         Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
       }
     }
@@ -36,7 +39,7 @@ trait EtmpDataLoaderProxy extends FrontendController {
 
   def loadAgents = Action.async(parse.tolerantText) { implicit req =>
     FrontendGlobal.withBasicAuth {
-      eeittConnector.testOnlyLoadAgents(req.body).map { resp =>
+      eeittConnector.loadAgents(req.body).map { resp =>
         Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
       }
     }
