@@ -151,46 +151,31 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
     }
 
     private def testResponse(statusCode : Int) = {
-      NingWSResponse(ahcResponse = new Response {
-        override def getResponseBodyExcerpt(maxLength: Int, charset: String) = ???
+      NingWSResponse(responseStub(statusCode))
+    }
 
-        override def getResponseBodyExcerpt(maxLength: Int) = ???
+    case class responseStub(statusCode : Int) extends Response {
+      override def getStatusCode = statusCode
 
-        override def getResponseBodyAsByteBuffer = ???
+      override def getHeaders = new FluentCaseInsensitiveStringsMap()
+      override def getResponseBody(charset: String) = ""
+      override def getContentType = ""
 
-        override def getStatusCode = statusCode
-
-        override def getResponseBodyAsBytes = ???
-
-        override def getResponseBodyAsStream = ???
-
-        override def isRedirected = ???
-
-        override def getCookies = ???
-
-        override def hasResponseBody = ???
-
-        override def getStatusText = ???
-
-        override def getHeaders(name: String) = ???
-
-        override def getHeaders = new FluentCaseInsensitiveStringsMap()
-
-        override def hasResponseHeaders = ???
-
-        override def getResponseBody(charset: String) = ""
-
-        override def getResponseBody = ???
-
-        override def getContentType = ""
-
-        override def hasResponseStatus = ???
-
-        override def getUri = ???
-
-        override def getHeader(name: String) = ???
-      })
+      override def getResponseBodyExcerpt(maxLength: Int, charset: String) = ???
+      override def getResponseBodyExcerpt(maxLength: Int) = ???
+      override def getResponseBodyAsByteBuffer = ???
+      override def getResponseBodyAsBytes = ???
+      override def getResponseBodyAsStream = ???
+      override def isRedirected = ???
+      override def getCookies = ???
+      override def hasResponseBody = ???
+      override def getStatusText = ???
+      override def getHeaders(name: String) = ???
+      override def hasResponseHeaders = ???
+      override def getResponseBody = ???
+      override def hasResponseStatus = ???
+      override def getUri = ???
+      override def getHeader(name: String) = ???
     }
   }
-
 }
