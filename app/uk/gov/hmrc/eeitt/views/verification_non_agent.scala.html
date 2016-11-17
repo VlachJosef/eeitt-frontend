@@ -32,7 +32,7 @@
     <fieldset class="form-field-group@if(enrollmentForm("registrationNumber").hasErrors){ form-field-group--error}">
       <label for="arn">
         Registration Number
-        @errorInline("registrationNumber", "Please enter your registration number", Seq("optional-extra-css-classes"))
+        @errorInline("registrationNumber", "Please enter a valid registration number", Seq("optional-extra-css-classes"))
         <input
         type="text"
         name="registrationNumber"
@@ -40,6 +40,7 @@
         value="@enrollmentForm("registrationNumber").value"
         class="form-control form-control--block"
         required
+        pattern="^[a-zA-Z0-9]{15}$"
         >
       </label>
     </fieldset>
