@@ -3,3 +3,7 @@
 GET     /enrollment-verification            uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.displayVerificationPage(callbackUrl)
 POST    /enrollment-verification            uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.submitEnrollmentDetails(callbackUrl)
 POST    /enrollment-agent-verification      uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl)
+POST    /enrollment-agent-verification      uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl)
+
+POST       /etmp-data/business-users             uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.loadBusinessUsers
+POST       /etmp-data/agents                     uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.loadAgents

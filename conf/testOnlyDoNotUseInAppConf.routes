@@ -9,8 +9,6 @@
 # !!!WARNING!!! Every route defined in this file MUST be prefixed with "/test-only/". This is because NGINX is blocking every uri containing the string "test-only" in production.
 # Failing to follow this rule may result in test routes deployed in production.
 
-POST       /eeitt-auth/test-only/etmp-data/business-users             uk.gov.hmrc.eeitt.testonly.EtmpDataLoaderProxy.loadBusinessUsers
-POST       /eeitt-auth/test-only/etmp-data/agents                     uk.gov.hmrc.eeitt.testonly.EtmpDataLoaderProxy.loadAgents
 GET        /eeitt-auth/test-only/sign-out                            uk.gov.hmrc.eeitt.testonly.SignOutController.signOut()
 
 # Add all the application routes to the prod.routes file

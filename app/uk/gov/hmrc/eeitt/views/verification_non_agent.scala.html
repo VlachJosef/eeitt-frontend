@@ -12,11 +12,11 @@
 
 @main_template("Enrollment Verification", sidebarLinks = Some(sidebarContent)) {
   <header class="page-header">
-    <h1>Register to submit forms online</h1>
+    <h1>Submit your tax return online</h1>
   </header>
 
   <p>
-    Enter your 15-digit Air Passenger Duty registration number and business postcode.
+    Enter your 15-digit registration number and business postcode to get started.
   </p>
 
   <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitEnrollmentDetails(callbackUrl).url method="POST" class="js-form" autocomplete="off" novalidate="novalidate">
@@ -41,8 +41,6 @@
         class="form-control form-control--block"
         required
         pattern="^[a-zA-Z0-9]{15}$"
-        data-msg-pattern="Please enter a valid reference number."
-        data-msg-required="Please enter a valid reference number"
         >
       </label>
     </fieldset>
@@ -50,7 +48,7 @@
     <fieldset class="form-field-group@if(enrollmentForm("postcode").hasErrors){ form-field-group--error}">
       <label>
         Business postcode
-        @errorInline("postcode", "Please enter your postcode", Seq("optional-extra-css-classes"))
+        @errorInline("postcode", "Please enter your business postcode", Seq("optional-extra-css-classes"))
         <input
         type="text"
         name="postcode"
@@ -64,7 +62,9 @@
 
     <input type="hidden" name="groupId" value="@groupId" />
 
-    <input type="submit" class="button" value="Submit" />
+    <fieldset class="form-field-group">
+      <input id="accessForm" type="submit" class="button" value="Continue">
+    </fieldset>
 
   </form>
 
@@ -72,45 +72,21 @@
     <h2>Problems signing in</h2>
 
     <details class="details">
-      <summary id="registration-link-container" role="button" aria-expanded="false">
-        Don't have an agent reference number
-      </summary>
+      <summary id="registration-link-container" role="button" aria-expanded="false">Don't have a registration number</summary>
       <div class="details__inner" id="details-content-1">
         <p class="panel-indent">
-          placeholder
-        </p>
-      </div>
-    </details>
-
-    <details class="details">
-      <summary role="button" aria-expanded="false">
-        Client doesn't have an Air Passenger Duty registration number
-      </summary>
-      <div class="details__inner" id="details-content-2">
-        <p class="panel-indent">
-          placeholder
+          <a href="https://www.gov.uk/topic/business-tax">Choose your relevant tax and then follow the registration instructions.</a>
         </p>
       </div>
     </details>
 
     <details class="details">
       <summary role="button" aria-expanded="false">Chat to an HMRC advisor online</summary>
-      <div class="details__inner" id="details-content-3">
+      <div class="details__inner" id="details-content-2">
         <p class="panel-indent">
-          placeholder
+          <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact">Contact a HMRC advisor</a>
         </p>
       </div>
     </details>
-
-    <details class="details">
-      <summary role="button" aria-expanded="false">Get help with this page</summary>
-      <div class="details__inner" id="details-content-3">
-        <p class="panel-indent">
-          placeholder
-        </p>
-      </div>
-    </details>
-
   </section>
-
 }
