@@ -53,13 +53,13 @@ trait EeittConnector {
     }
   }
 
-  def testOnlyLoadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+  def loadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
     withLoggingFutures {
       WS.url(eeittUrl + "etmp-data/business-users").post(source)
     }
   }
 
-  def testOnlyLoadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+  def loadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
     withLoggingFutures {
       WS.url(eeittUrl + "etmp-data/agents").post(source)
     }
