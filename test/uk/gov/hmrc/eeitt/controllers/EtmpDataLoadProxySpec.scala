@@ -18,10 +18,8 @@ package uk.gov.hmrc.eeitt.controllers
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
-import com.ning.http.client.{FluentCaseInsensitiveStringsMap, Response}
 import org.scalatest.concurrent.ScalaFutures
 import play.api.http.{HeaderNames, Status}
-import play.api.libs.ws.ning.NingWSResponse
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.{FakeHeaders, FakeRequest}
@@ -142,39 +140,26 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
       def httpPost: HttpPost = ???
 
       override def loadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
-        Future.successful(testResponse(Status.CREATED))
+        Future.successful(stubWSResponse(Status.CREATED))
       }
       override def loadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
-        Future.successful(testResponse(Status.CREATED))
+        Future.successful(stubWSResponse(Status.CREATED))
       }
     }
 
-    private def testResponse(statusCode : Int) = {
-      NingWSResponse(responseStub(statusCode))
+    private def stubWSResponse(statusCode : Int) : WSResponse = new WSResponse {override def statusText = ???
+      override def status = statusCode
+
+      override def allHeaders = Map[String, Seq[String]]()
+
+      override def underlying[T] = ???
+      override def xml = ???
+      override def body = ""
+      override def header(key: String) = ???
+      override def cookie(name: String) = ???
+      override def cookies = ???
+      override def json = ???
     }
 
-    case class responseStub(statusCode : Int) extends Response {
-      override def getStatusCode = statusCode
-
-      override def getHeaders = new FluentCaseInsensitiveStringsMap()
-      override def getResponseBody(charset: String) = ""
-      override def getContentType = ""
-
-      override def getResponseBodyExcerpt(maxLength: Int, charset: String) = ???
-      override def getResponseBodyExcerpt(maxLength: Int) = ???
-      override def getResponseBodyAsByteBuffer = ???
-      override def getResponseBodyAsBytes = ???
-      override def getResponseBodyAsStream = ???
-      override def isRedirected = ???
-      override def getCookies = ???
-      override def hasResponseBody = ???
-      override def getStatusText = ???
-      override def getHeaders(name: String) = ???
-      override def hasResponseHeaders = ???
-      override def getResponseBody = ???
-      override def hasResponseStatus = ???
-      override def getUri = ???
-      override def getHeader(name: String) = ???
     }
-  }
 }
