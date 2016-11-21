@@ -17,9 +17,9 @@
 package uk.gov.hmrc.eeitt.controllers.auth
 
 import play.api.mvc.Results._
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{ AnyContent, Request, Result }
 import uk.gov.hmrc.eeitt.FrontendAppConfig
-import uk.gov.hmrc.eeitt.controllers.{AsyncUserRequest, UserRequest}
+import uk.gov.hmrc.eeitt.controllers.{ AsyncUserRequest, UserRequest }
 import uk.gov.hmrc.play.frontend.auth._
 
 import scala.concurrent.Future

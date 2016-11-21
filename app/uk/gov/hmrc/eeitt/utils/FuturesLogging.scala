@@ -18,8 +18,8 @@ package uk.gov.hmrc.eeitt.utils
 
 import play.Logger
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success }
 
 object FuturesLogging {
   def withLoggingFutures[A](future: Future[A])(implicit ec: ExecutionContext): Future[A] = {

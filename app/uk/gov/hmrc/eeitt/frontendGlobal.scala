@@ -22,18 +22,17 @@ import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import play.api.Mode._
 import play.api.mvc.Request
-import play.api.{Application, Configuration, Play}
+import play.api.{ Application, Configuration, Play }
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.eeitt.infrastructure.{BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled}
+import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled }
 import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
-import uk.gov.hmrc.play.config.{AppName, ControllerConfig, RunMode}
+import uk.gov.hmrc.play.config.{ AppName, ControllerConfig, RunMode }
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
 import uk.gov.hmrc.play.http.logging.filters.FrontendLoggingFilter
 
-
 object FrontendGlobal
-  extends DefaultFrontendGlobal {
+    extends DefaultFrontendGlobal {
 
   override val auditConnector = FrontendAuditConnector
   override val loggingFilter = LoggingFilter

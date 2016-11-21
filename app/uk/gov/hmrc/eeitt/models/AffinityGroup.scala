@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.eeitt.models
 
-import play.api.libs.json.{JsResult, JsValue, Reads}
+import play.api.libs.json.{ JsResult, JsValue, Reads }
 
 sealed trait AffinityGroup
 case object Agent extends AffinityGroup

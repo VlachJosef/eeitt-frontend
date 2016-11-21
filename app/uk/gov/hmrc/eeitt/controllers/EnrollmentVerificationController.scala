@@ -17,7 +17,7 @@
 package uk.gov.hmrc.eeitt.controllers
 
 import uk.gov.hmrc.eeitt.FrontendAuthConnector
-import uk.gov.hmrc.eeitt.connectors.{EeittConnector, VerificationResult}
+import uk.gov.hmrc.eeitt.connectors.{ EeittConnector, VerificationResult }
 import uk.gov.hmrc.eeitt.controllers.auth.EeittAuth
 import uk.gov.hmrc.eeitt.models._
 import uk.gov.hmrc.eeitt.views.html._
@@ -31,21 +31,19 @@ trait EnrollmentVerificationController extends FrontendController with Actions {
 
   def eeittConnector: EeittConnector
 
-  def displayVerificationPage(callbackUrl: String) = AsyncAuthenticatedAction {
-    implicit authContext => implicit request =>
-      authConnector.getUserDetails[UserDetails](authContext).map {
-        case UserDetails(NonAgent, groupIdentifier) =>
-          Ok(verification_non_agent(EnrollmentDetails.form, callbackUrl, groupIdentifier))
+  def displayVerificationPage(callbackUrl: String) = AsyncAuthenticatedAction { implicit authContext => implicit request =>
+    authConnector.getUserDetails[UserDetails](authContext).map {
+      case UserDetails(NonAgent, groupIdentifier) =>
+        Ok(verification_non_agent(EnrollmentDetails.form, callbackUrl, groupIdentifier))
 
-        case UserDetails(Agent, groupIdentifier) =>
-          Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl, groupIdentifier))
-      }
+      case UserDetails(Agent, groupIdentifier) =>
+        Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl, groupIdentifier))
+    }
   }
 
-  def submitEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction {
-    implicit authContext => implicit request =>
-      authConnector.getUserDetails[UserDetails](authContext).flatMap {
-        case UserDetails(_, groupIdentifier) =>
+  def submitEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction { implicit authContext => implicit request =>
+    authConnector.getUserDetails[UserDetails](authContext).flatMap {
+      case UserDetails(_, groupIdentifier) =>
         EnrollmentDetails.form.bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
@@ -60,28 +58,27 @@ trait EnrollmentVerificationController extends FrontendController with Actions {
                 Redirect(callbackUrl)
             }
         )
-      }
+    }
   }
 
-  def submitAgentEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction {
-    implicit authContext => implicit request =>
-      authConnector.getUserDetails[UserDetails](authContext).flatMap {
-        case UserDetails(_, groupIdentifier) =>
-          AgentEnrollmentDetails.form.bindFromRequest().fold(
-            formWithErrors =>
-              Future.successful(
+  def submitAgentEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction { implicit authContext => implicit request =>
+    authConnector.getUserDetails[UserDetails](authContext).flatMap {
+      case UserDetails(_, groupIdentifier) =>
+        AgentEnrollmentDetails.form.bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(verification_agent(formWithErrors, callbackUrl, groupIdentifier))
+            ),
+          formData =>
+            eeittConnector.registerAgent(formData).map {
+              case VerificationResult(Some(errorMsg)) =>
+                val formWithErrors = AgentEnrollmentDetails.form.withGlobalError(errorMsg)
                 BadRequest(verification_agent(formWithErrors, callbackUrl, groupIdentifier))
-              ),
-            formData =>
-              eeittConnector.registerAgent(formData).map {
-                case VerificationResult(Some(errorMsg)) =>
-                  val formWithErrors = AgentEnrollmentDetails.form.withGlobalError(errorMsg)
-                  BadRequest(verification_agent(formWithErrors, callbackUrl, groupIdentifier))
-                case VerificationResult(noErrors) =>
-                  Redirect(callbackUrl)
-              }
-          )
-      }
+              case VerificationResult(noErrors) =>
+                Redirect(callbackUrl)
+            }
+        )
+    }
   }
 
 }
