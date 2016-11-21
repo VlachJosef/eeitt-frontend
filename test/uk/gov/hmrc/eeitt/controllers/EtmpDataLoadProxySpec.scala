@@ -19,19 +19,19 @@ package uk.gov.hmrc.eeitt.controllers
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
 import org.scalatest.concurrent.ScalaFutures
-import play.api.http.{HeaderNames, Status}
+import play.api.http.{ HeaderNames, Status }
 import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
-import play.api.test.{FakeHeaders, FakeRequest}
+import play.api.test.{ FakeHeaders, FakeRequest }
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpPost}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost }
+import uk.gov.hmrc.play.test.{ UnitSpec, WithFakeApplication }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with ScalaFutures {
 
-  def basic64(s:String): String = {
+  def basic64(s: String): String = {
     BaseEncoding.base64().encode(s.getBytes(Charsets.UTF_8))
   }
 
@@ -147,7 +147,8 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
       }
     }
 
-    private def stubWSResponse(statusCode : Int) : WSResponse = new WSResponse {override def statusText = ???
+    private def stubWSResponse(statusCode: Int): WSResponse = new WSResponse {
+      override def statusText = ???
       override def status = statusCode
 
       override def allHeaders = Map[String, Seq[String]]()
@@ -161,5 +162,5 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
       override def json = ???
     }
 
-    }
+  }
 }

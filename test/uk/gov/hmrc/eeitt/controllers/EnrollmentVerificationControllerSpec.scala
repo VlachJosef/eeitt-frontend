@@ -17,19 +17,19 @@
 package uk.gov.hmrc.eeitt.controllers
 
 import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Millis, Seconds, Span}
+import org.scalatest.time.{ Millis, Seconds, Span }
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.eeitt.connectors.{EeittConnector, VerificationResult}
-import uk.gov.hmrc.eeitt.controllers.auth.{TestEeittAuth, TestUsers}
+import uk.gov.hmrc.eeitt.connectors.{ EeittConnector, VerificationResult }
+import uk.gov.hmrc.eeitt.controllers.auth.{ TestEeittAuth, TestUsers }
 import uk.gov.hmrc.eeitt.models._
 import uk.gov.hmrc.play.frontend.auth._
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpReads}
+import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpGet, HttpPost, HttpReads }
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures with OneAppPerSuite with TestUsers {
 
@@ -122,12 +122,10 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
 
         def httpPost: HttpPost = ???
 
-        override def registerNonAgent(enrollmentDetails: EnrollmentDetails)
-                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
+        override def registerNonAgent(enrollmentDetails: EnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
           Future.successful(verificationResult)
         }
-        override def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)
-                                     (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
+        override def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
           Future.successful(verificationResult)
         }
       }
@@ -136,15 +134,14 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
         def http: HttpGet = ???
         val serviceUrl: String = "test-service-url"
 
-        override def getUserDetails[T](authContext: AuthContext)
-                                      (implicit hc: HeaderCarrier, reads: HttpReads[T]): Future[T] = {
+        override def getUserDetails[T](authContext: AuthContext)(implicit hc: HeaderCarrier, reads: HttpReads[T]): Future[T] = {
           val affinityGroup = if (user.isDelegating) Agent else NonAgent
           Future.successful(UserDetails(affinityGroup, "test-group-id")).asInstanceOf[Future[T]]
         }
       }
 
-    def authContext: AuthContext = user
-  }
+      def authContext: AuthContext = user
+    }
 
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(10, Millis))
 

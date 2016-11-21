@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.eeitt
 
-import play.api.Play.{configuration, current}
+import play.api.Play.{ configuration, current }
 import uk.gov.hmrc.play.config.ServicesConfig
 
 trait AppConfig {
@@ -43,8 +43,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
   override lazy val governmentGatewaySignInUrl = configuration.getString("government-gateway-sign-in-url").getOrElse("")
-//  override lazy val governmentGatewaySignInUrl = "http://localhost:9025/gg/sign-in"
-
+  //  override lazy val governmentGatewaySignInUrl = "http://localhost:9025/gg/sign-in"
 
   // this will be empty in non-local environments
   override lazy val eeittFrontendBaseUrl = configuration.getString("eeitt-frontend-base-url").getOrElse("")

@@ -23,8 +23,8 @@ import uk.gov.hmrc.eeitt.connectors.EeittConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 /**
-  * Created by dave on 17/11/16.
-  */
+ * Created by dave on 17/11/16.
+ */
 trait EtmpDataLoaderProxy extends FrontendController {
 
   def eeittConnector: EeittConnector

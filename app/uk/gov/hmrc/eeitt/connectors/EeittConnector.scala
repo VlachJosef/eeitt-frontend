@@ -18,9 +18,9 @@ package uk.gov.hmrc.eeitt.connectors
 
 import play.api.Play.current
 import play.api.libs.json.Json
-import play.api.libs.ws.{WS, WSResponse}
+import play.api.libs.ws.{ WS, WSResponse }
 import uk.gov.hmrc.eeitt.WSHttp
-import uk.gov.hmrc.eeitt.models.{AgentEnrollmentDetails, EnrollmentDetails}
+import uk.gov.hmrc.eeitt.models.{ AgentEnrollmentDetails, EnrollmentDetails }
 import uk.gov.hmrc.eeitt.utils.FuturesLogging.withLoggingFutures
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -30,24 +30,22 @@ object VerificationResult {
   implicit val formats = Json.format[VerificationResult]
 }
 
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpPost}
+import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost }
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait EeittConnector {
   def httpPost: HttpPost
 
   def eeittUrl: String
 
-  def registerNonAgent(enrollmentDetails: EnrollmentDetails)
-                      (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
+  def registerNonAgent(enrollmentDetails: EnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
     withLoggingFutures {
       httpPost.POST[EnrollmentDetails, VerificationResult](eeittUrl + "register", enrollmentDetails)
     }
   }
 
-  def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)
-                   (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
+  def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
     withLoggingFutures {
       httpPost.POST[AgentEnrollmentDetails, VerificationResult](eeittUrl + "register-agent", agentEnrollmentDetails)
     }
@@ -70,7 +68,3 @@ object EeittConnector extends EeittConnector with ServicesConfig {
   lazy val httpPost = WSHttp
   def eeittUrl: String = s"${baseUrl("eeitt")}/eeitt/"
 }
-
-
-
-

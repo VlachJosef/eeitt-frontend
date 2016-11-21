@@ -20,7 +20,7 @@ import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
 import play.api.http.HeaderNames
 import play.api.mvc.Results.Status
-import play.api.mvc.{RequestHeader, Result}
+import play.api.mvc.{ RequestHeader, Result }
 
 import scala.concurrent.Future
 
@@ -41,8 +41,7 @@ class AuthorisingBasicAuth(users: List[User]) extends BasicAuth {
 
   def userAuthorised(credential: Option[String]): Boolean =
     credential.exists(cred =>
-      users.exists(user => "Basic " + BaseEncoding.base64().encode((user.name + ":" + user.password).getBytes(Charsets.UTF_8)) == cred)
-    )
+      users.exists(user => "Basic " + BaseEncoding.base64().encode((user.name + ":" + user.password).getBytes(Charsets.UTF_8)) == cred))
 }
 
 object AlwaysAuthorisedBasicAuth extends BasicAuth {

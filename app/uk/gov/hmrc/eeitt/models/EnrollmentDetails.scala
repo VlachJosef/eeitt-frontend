@@ -20,9 +20,11 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.Json
 
-case class EnrollmentDetails(registrationNumber: String,
-                             postcode: Option[String],
-                             groupId: String)
+case class EnrollmentDetails(
+  registrationNumber: String,
+  postcode: Option[String],
+  groupId: String
+)
 
 object EnrollmentDetails {
   implicit val formats = Json.format[EnrollmentDetails]
@@ -34,9 +36,11 @@ object EnrollmentDetails {
   )(EnrollmentDetails.apply)(EnrollmentDetails.unapply))
 }
 
-case class AgentEnrollmentDetails(arn: String,
-                                  postcode: Option[String],
-                                  groupId: String)
+case class AgentEnrollmentDetails(
+  arn: String,
+  postcode: Option[String],
+  groupId: String
+)
 
 object AgentEnrollmentDetails {
   implicit val formats = Json.format[AgentEnrollmentDetails]

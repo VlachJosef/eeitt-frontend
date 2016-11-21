@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.eeitt.testonly
 
-import play.api.mvc.{Action, Controller}
+import play.api.mvc.{ Action, Controller }
 import play.twirl.api.Html
 import uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.displayVerificationPage
 
