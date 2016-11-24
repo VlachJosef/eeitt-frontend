@@ -21,15 +21,18 @@ import java.io.File
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import play.api.Mode._
+import play.api.Play.current
 import play.api.mvc.Request
-import play.api.{ Application, Configuration, Play }
+import play.api.{ Application, Configuration, Logger, Play }
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled }
+import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, BasicAuthDisabled, BasicAuthEnabled, User }
 import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
 import uk.gov.hmrc.play.config.{ AppName, ControllerConfig, RunMode }
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
 import uk.gov.hmrc.play.http.logging.filters.FrontendLoggingFilter
+
+import scala.util.Try
 
 object FrontendGlobal
     extends DefaultFrontendGlobal {
@@ -54,10 +57,15 @@ object FrontendGlobal
       }.getOrElse(List.empty)
     }
 
-    config.getBoolean("feature.basicAuthEnabled").getOrElse(false) match {
-      case true => BasicAuthEnabled(getUsers(config))
-      case false => BasicAuthDisabled
-    }
+    current.configuration.getString("feature.basicAuthEnabled")
+      .flatMap(flag => Try(flag.toBoolean).toOption) match {
+        case Some(true) => BasicAuthEnabled(getUsers(config))
+        case Some(false) => BasicAuthDisabled
+        case _ => {
+          Logger.warn("A boolean configuration value has not been provided for feature.basicAuthEnabled, defaulting to false")
+          BasicAuthDisabled
+        }
+      }
   }
 
   override def onStart(app: Application) {
