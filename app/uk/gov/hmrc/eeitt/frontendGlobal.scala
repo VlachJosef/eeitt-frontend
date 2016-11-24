@@ -21,12 +21,11 @@ import java.io.File
 import com.typesafe.config.Config
 import net.ceedubs.ficus.Ficus._
 import play.api.Mode._
-import play.api.Play.current
 import play.api.mvc.Request
 import play.api.{ Application, Configuration, Logger, Play }
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, BasicAuthDisabled, BasicAuthEnabled, User }
+import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled }
 import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
 import uk.gov.hmrc.play.config.{ AppName, ControllerConfig, RunMode }
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
@@ -50,14 +49,17 @@ object FrontendGlobal
           user => {
             user.split(":") match {
               case Array(username, password) => Some(User(username, password))
-              case _ => None
+              case _ => {
+                Logger.warn("A user:password value has been malformed in basicAuth.authorizedUsers, ignoring it")
+                None
+              }
             }
           }
         ).toList
       }.getOrElse(List.empty)
     }
 
-    current.configuration.getString("feature.basicAuthEnabled")
+    config.getString("feature.basicAuthEnabled")
       .flatMap(flag => Try(flag.toBoolean).toOption) match {
         case Some(true) => BasicAuthEnabled(getUsers(config))
         case Some(false) => BasicAuthDisabled
