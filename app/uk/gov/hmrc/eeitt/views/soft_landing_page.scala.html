@@ -1,6 +1,7 @@
-@import uk.gov.hmrc.eeitt.models.AgentEnrollmentDetails
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
 @import uk.gov.hmrc.play.views.html.helpers._
+
+@(description: String, startUrl: String)(implicit request: Request[_], authContext: AuthContext)
 
 @main_template("File a return") {
   <header class="page-header">
