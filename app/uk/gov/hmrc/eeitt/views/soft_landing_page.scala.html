@@ -1,0 +1,31 @@
+@import uk.gov.hmrc.play.frontend.auth.AuthContext
+@import uk.gov.hmrc.play.views.html.helpers._
+
+@(description: String, startUrl: String)(implicit request: Request[_], authContext: AuthContext)
+
+@main_template("File a return") {
+  <header class="page-header">
+    <h1>File your ***DYNAMIC-REGIME-NAME*** return</h1>
+  </header>
+
+  <p>
+    To submit a tax return online, you need a Government Gateway ID and either a Airline
+    Passenger Duty registration number or agent reference number provided by HMRC.
+  </p>
+
+  <a href="/***ROUTE-TO-DFS-FORM***">
+    <button class="button button--get-started">Start now</button>
+  </a>
+
+  <section class="subsection">
+    <h2>Problems signing in</h2>
+    <ul class="bullets">
+      <li>
+        If this is your first time using HMRC online create a new <a href="/***LINK***">Government Gateway ID</a>.
+      </li>
+      <li>
+        If you're an agent or representative and don't have a Government Gateway ID you need to <a rel="external" target="_gg" href="/***LINK***">create it in a different way</a>. When you have your ID, come back to this page and start your online return.
+      </li>
+    </ul>
+  </section>
+}
