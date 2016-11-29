@@ -20,7 +20,7 @@ import play.api.Play.current
 import play.api.libs.json.Json
 import play.api.libs.ws.{ WS, WSResponse }
 import uk.gov.hmrc.eeitt.WSHttp
-import uk.gov.hmrc.eeitt.models.{ AgentEnrollmentDetails, EnrollmentDetails }
+import uk.gov.hmrc.eeitt.models.{ AgentEnrollmentDetails, EnrollmentDetails, ImportMode, UserMode }
 import uk.gov.hmrc.eeitt.utils.FuturesLogging.withLoggingFutures
 import uk.gov.hmrc.play.config.ServicesConfig
 
@@ -51,20 +51,14 @@ trait EeittConnector {
     }
   }
 
-  def loadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+  def load(source: String, importMode: ImportMode, userMode: UserMode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
     withLoggingFutures {
-      WS.url(eeittUrl + "etmp-data/business-users").post(source)
-    }
-  }
-
-  def loadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
-    withLoggingFutures {
-      WS.url(eeittUrl + "etmp-data/agents").post(source)
+      WS.url(s"$eeittUrl/etmp-data/$importMode/$userMode").post(source)
     }
   }
 }
 
 object EeittConnector extends EeittConnector with ServicesConfig {
   lazy val httpPost = WSHttp
-  def eeittUrl: String = s"${baseUrl("eeitt")}/eeitt/"
+  def eeittUrl: String = s"${baseUrl("eeitt")}/eeitt"
 }
