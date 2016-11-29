@@ -24,6 +24,7 @@ import play.api.libs.ws.WSResponse
 import play.api.mvc.Result
 import play.api.test.{ FakeHeaders, FakeRequest }
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
+import uk.gov.hmrc.eeitt.models.{ Agents, BusinessUsers, ImportMode, Live, UserMode }
 import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost }
 import uk.gov.hmrc.play.test.{ UnitSpec, WithFakeApplication }
 
@@ -45,7 +46,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
         override lazy val host = serverUrl
       }
 
-      val result: Result = proxy.loadBusinessUsers()(fakeRequest).futureValue
+      val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
 
       result.header.status shouldBe Status.FORBIDDEN
     }
@@ -61,7 +62,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
 
-      val result: Result = proxy.loadBusinessUsers()(fakeRequest).futureValue
+      val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
 
       result.header.status shouldBe Status.FORBIDDEN
     }
@@ -77,7 +78,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
 
-      val result: Result = proxy.loadBusinessUsers()(fakeRequest).futureValue
+      val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
 
       result.header.status shouldBe Status.CREATED
     }
@@ -93,7 +94,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
         override lazy val host = serverUrl
       }
 
-      val result: Result = proxy.loadAgents()(fakeRequest).futureValue
+      val result: Result = proxy.load(Agents, Live)(fakeRequest).futureValue
 
       result.header.status shouldBe Status.FORBIDDEN
     }
@@ -109,7 +110,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
 
-      val result: Result = proxy.loadAgents()(fakeRequest).futureValue
+      val result: Result = proxy.load(Agents, Live)(fakeRequest).futureValue
 
       result.header.status shouldBe Status.FORBIDDEN
     }
@@ -125,7 +126,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
         override lazy val host = serverUrl
       }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
 
-      val result: Result = proxy.loadAgents()(fakeRequest).futureValue
+      val result: Result = proxy.load(Agents, Live)(fakeRequest).futureValue
 
       result.header.status shouldBe Status.CREATED
     }
@@ -139,10 +140,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
       def httpPost: HttpPost = ???
 
-      override def loadBusinessUsers(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
-        Future.successful(stubWSResponse(Status.CREATED))
-      }
-      override def loadAgents(source: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+      override def load(source: String, importMode: ImportMode, userMode: UserMode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
         Future.successful(stubWSResponse(Status.CREATED))
       }
     }

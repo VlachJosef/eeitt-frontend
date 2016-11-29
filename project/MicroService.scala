@@ -30,6 +30,12 @@ trait MicroService {
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
+    .settings(play.PlayImport.PlayKeys.routesImport ++= Seq(
+                "uk.gov.hmrc.eeitt.binders.ImportModeBinder._",
+                "uk.gov.hmrc.eeitt.binders.UserModeBinder._",
+                "uk.gov.hmrc.eeitt.models.ImportMode",
+                "uk.gov.hmrc.eeitt.models.UserMode"
+              ))
     .settings(
       libraryDependencies ++= appDependencies,
       retrieveManaged := true,

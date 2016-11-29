@@ -4,5 +4,6 @@ GET     /enrollment-verification            uk.gov.hmrc.eeitt.controllers.Enroll
 POST    /enrollment-verification            uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.submitEnrollmentDetails(callbackUrl)
 POST    /enrollment-agent-verification      uk.gov.hmrc.eeitt.controllers.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl)
 
-POST       /etmp-data/business-users             uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.loadBusinessUsers
-POST       /etmp-data/agents                     uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.loadAgents
+# userMode is either 'agents' or 'business-users'
+# importMode is either 'dry-run' or 'live'
+POST       /etmp-data/:userMode/:importMode  uk.gov.hmrc.eeitt.controllers.EtmpDataLoaderProxy.load(userMode: UserMode, importMode: ImportMode)

@@ -21,22 +21,15 @@ import play.api.mvc.Action
 import uk.gov.hmrc.eeitt.FrontendGlobal
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.eeitt.models.{ ImportMode, UserMode }
 
 trait EtmpDataLoaderProxy extends FrontendController {
 
   def eeittConnector: EeittConnector
 
-  def loadBusinessUsers = Action.async(parse.tolerantText) { implicit req =>
+  def load(userMode: UserMode, importMode: ImportMode) = Action.async(parse.tolerantText) { implicit req =>
     FrontendGlobal.withBasicAuth {
-      eeittConnector.loadBusinessUsers(req.body).map { resp =>
-        Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
-      }
-    }
-  }
-
-  def loadAgents = Action.async(parse.tolerantText) { implicit req =>
-    FrontendGlobal.withBasicAuth {
-      eeittConnector.loadAgents(req.body).map { resp =>
+      eeittConnector.load(req.body, importMode, userMode).map { resp =>
         Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
       }
     }
