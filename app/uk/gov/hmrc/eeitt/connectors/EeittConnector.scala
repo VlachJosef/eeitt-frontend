@@ -41,13 +41,13 @@ trait EeittConnector {
 
   def registerNonAgent(enrollmentDetails: EnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
     withLoggingFutures {
-      httpPost.POST[EnrollmentDetails, VerificationResult](eeittUrl + "register", enrollmentDetails)
+      httpPost.POST[EnrollmentDetails, VerificationResult](eeittUrl + "/register", enrollmentDetails)
     }
   }
 
   def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
     withLoggingFutures {
-      httpPost.POST[AgentEnrollmentDetails, VerificationResult](eeittUrl + "register-agent", agentEnrollmentDetails)
+      httpPost.POST[AgentEnrollmentDetails, VerificationResult](eeittUrl + "/register-agent", agentEnrollmentDetails)
     }
   }
 
