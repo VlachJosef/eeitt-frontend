@@ -40,7 +40,7 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
       val result = controller.displayVerificationPage(callbackUrl = "/dfs/forms")(FakeRequest()).futureValue
 
       status(result) shouldBe 200
-      contentAsString(result) should include("Agent Reference Number")
+      contentAsString(result) should include("Access code")
     }
     "be specific for a business user if non-agent user has logged-in" in {
       val controller = enrollmentVerificationController(businessUser)
