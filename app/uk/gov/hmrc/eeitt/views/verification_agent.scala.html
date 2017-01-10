@@ -16,7 +16,7 @@
   </header>
 
   <p>
-    Enter your agent reference number and business postcode to get started.
+    Enter your access code and business postcode to get started.
   </p>
 
   <form action=@uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.submitAgentEnrollmentDetails(callbackUrl).url method="POST" class="js-form" autocomplete="off" novalidate="novalidate">
@@ -31,8 +31,8 @@
 
     <fieldset class="form-field-group@if(enrollmentForm("arn").hasErrors){ form-field-group--error}">
       <label for="arn">
-        Agent Reference Number
-          @errorInline("arn", "Please enter your agent reference number", Seq("optional-extra-css-classes"))
+        Access code
+          @errorInline("arn", "Please enter your access code", Seq("optional-extra-css-classes"))
         <input
           type="text"
           name="arn"
