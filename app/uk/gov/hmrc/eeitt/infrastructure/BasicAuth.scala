@@ -18,6 +18,7 @@ package uk.gov.hmrc.eeitt.infrastructure
 
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
+import play.api.Logger
 import play.api.http.HeaderNames
 import play.api.mvc.Results.Status
 import play.api.mvc.{ RequestHeader, Result }
@@ -26,10 +27,15 @@ import scala.concurrent.Future
 
 trait BasicAuth {
   def userAuthorised(credentials: Option[String]): Boolean
+  def whitelistPassed(address:Option[Address]): Boolean
 
   def apply(block: => Future[Result])(implicit request: RequestHeader) = {
     val maybeCredentials = request.headers.get(HeaderNames.AUTHORIZATION)
-    if (userAuthorised(maybeCredentials)) {
+    val trueClient = "True-Client-IP"
+    val maybeSource = request.headers.get(trueClient).map(Address(_))
+    val forwardedFor = request.headers.get("x-forwarded-for").getOrElse("none")
+    Logger.info(s"""Remote address ${request.remoteAddress}, x-forwarded-for ${forwardedFor}, True-Client-IP ${maybeSource.getOrElse("none")}""")
+    if (whitelistPassed(maybeSource) && userAuthorised(maybeCredentials)) {
       block
     } else {
       Future.successful(new Status(403))
@@ -37,7 +43,19 @@ trait BasicAuth {
   }
 }
 
-class AuthorisingBasicAuth(users: List[User]) extends BasicAuth {
+class AuthorisingBasicAuth(users: List[User], whitelist: Option[List[Address]]) extends BasicAuth {
+
+  def whitelistPassed(address:Option[Address]): Boolean = whitelist match {
+    case Some(w) =>
+      address match {
+        case Some(a) =>
+          w.contains(a)
+        case None =>
+          false
+      }
+    case None =>
+      true
+  }
 
   def userAuthorised(credential: Option[String]): Boolean =
     credential.exists(cred =>
@@ -45,6 +63,7 @@ class AuthorisingBasicAuth(users: List[User]) extends BasicAuth {
 }
 
 object AlwaysAuthorisedBasicAuth extends BasicAuth {
+  override def whitelistPassed(address:Option[Address]): Boolean = true
   override def userAuthorised(credentials: Option[String]): Boolean = true
 }
 
@@ -53,7 +72,7 @@ object BasicAuth {
   def apply(config: BasicAuthConfiguration) = {
     config match {
       case BasicAuthDisabled => AlwaysAuthorisedBasicAuth
-      case BasicAuthEnabled(users) => new AuthorisingBasicAuth(users)
+      case BasicAuthEnabled(users, whitelist) => new AuthorisingBasicAuth(users, whitelist)
     }
   }
 }
@@ -62,6 +81,8 @@ sealed abstract class BasicAuthConfiguration
 
 case object BasicAuthDisabled extends BasicAuthConfiguration
 
-case class BasicAuthEnabled(users: List[User]) extends BasicAuthConfiguration
+case class BasicAuthEnabled(users: List[User], whitelist: Option[List[Address]]) extends BasicAuthConfiguration
 
 case class User(name: String, password: String)
+
+case class Address(ip: String)
