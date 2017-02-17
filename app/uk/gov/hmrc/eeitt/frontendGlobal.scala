@@ -25,7 +25,7 @@ import play.api.mvc.Request
 import play.api.{ Application, Configuration, Logger, Play }
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled }
+import uk.gov.hmrc.eeitt.infrastructure._
 import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
 import uk.gov.hmrc.play.config.{ AppName, ControllerConfig, RunMode }
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
