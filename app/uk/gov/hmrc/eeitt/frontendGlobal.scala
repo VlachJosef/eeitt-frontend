@@ -25,7 +25,7 @@ import play.api.mvc.Request
 import play.api.{ Application, Configuration, Logger, Play }
 import play.twirl.api.Html
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, User, BasicAuthEnabled, BasicAuthDisabled }
+import uk.gov.hmrc.eeitt.infrastructure._
 import uk.gov.hmrc.play.audit.filters.FrontendAuditFilter
 import uk.gov.hmrc.play.config.{ AppName, ControllerConfig, RunMode }
 import uk.gov.hmrc.play.frontend.bootstrap.DefaultFrontendGlobal
@@ -59,15 +59,28 @@ object FrontendGlobal
       }.getOrElse(List.empty)
     }
 
+    def getWhitelist(config: Configuration): Option[List[Address]] = {
+      config.getString("basicAuth.whitelist").map {
+        _.split(",").map(a => Address(a)).toList
+      } match {
+        case None =>
+          Logger.warn("Configuration of basicAuth.whitelist has not been provided, so no whitelisting of IP addresses for BasicAuth access")
+          None
+        case Some(x) =>
+          Logger.info(s""""Whitelisting of IP addresses for BasicAuth access configured to [${x.map(_.ip).mkString(",")}]""")
+          Some(x)
+      }
+    }
+
     config.getString("feature.basicAuthEnabled")
       .flatMap(flag => Try(flag.toBoolean).toOption) match {
-        case Some(true) => BasicAuthEnabled(getUsers(config))
-        case Some(false) => BasicAuthDisabled
-        case _ => {
-          Logger.warn("A boolean configuration value has not been provided for feature.basicAuthEnabled, defaulting to false")
-          BasicAuthDisabled
-        }
+      case Some(true) => BasicAuthEnabled(getUsers(config), getWhitelist(config))
+      case Some(false) => BasicAuthDisabled
+      case _ => {
+        Logger.warn("A boolean configuration value has not been provided for feature.basicAuthEnabled, defaulting to false")
+        BasicAuthDisabled
       }
+    }
   }
 
   override def onStart(app: Application) {
