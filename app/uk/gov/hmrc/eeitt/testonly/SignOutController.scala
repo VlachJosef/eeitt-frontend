@@ -20,7 +20,7 @@ import play.api.mvc.{ Action, Controller }
 import play.twirl.api.Html
 import uk.gov.hmrc.eeitt.controllers.routes.EnrollmentVerificationController.displayVerificationPage
 
-object SignOutController extends Controller {
+class SignOutController extends Controller {
   def signOut = Action { request =>
     Ok(
       Html(

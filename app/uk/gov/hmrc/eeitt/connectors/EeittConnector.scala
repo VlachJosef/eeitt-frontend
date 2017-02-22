@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.eeitt.connectors
 
+import play.api.Application
 import play.api.Play.current
 import play.api.libs.json.Json
-import play.api.libs.ws.{ WS, WSResponse }
 import uk.gov.hmrc.eeitt.WSHttp
 import uk.gov.hmrc.eeitt.models.{ AgentEnrollmentDetails, EnrollmentDetails, ImportMode, UserMode }
 import uk.gov.hmrc.eeitt.utils.FuturesLogging.withLoggingFutures
-import uk.gov.hmrc.play.config.ServicesConfig
+import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost, HttpResponse }
+import scala.concurrent.{ ExecutionContext, Future }
 
 case class VerificationResult(error: Option[String])
 
@@ -30,14 +31,8 @@ object VerificationResult {
   implicit val formats = Json.format[VerificationResult]
 }
 
-import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost }
-
-import scala.concurrent.{ ExecutionContext, Future }
-
-trait EeittConnector {
-  def httpPost: HttpPost
-
-  def eeittUrl: String
+class EeittConnector(eeittUrl: String) {
+  lazy val httpPost = WSHttp
 
   def registerNonAgent(enrollmentDetails: EnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
     withLoggingFutures {
@@ -51,14 +46,9 @@ trait EeittConnector {
     }
   }
 
-  def load(source: String, importMode: ImportMode, userMode: UserMode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
+  def load(source: String, importMode: ImportMode, userMode: UserMode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     withLoggingFutures {
-      WS.url(s"$eeittUrl/etmp-data/$importMode/$userMode").post(source)
+      httpPost.doPost(s"$eeittUrl/etmp-data/$importMode/$userMode", source, Seq.empty[(String, String)])
     }
   }
-}
-
-object EeittConnector extends EeittConnector with ServicesConfig {
-  lazy val httpPost = WSHttp
-  def eeittUrl: String = s"${baseUrl("eeitt")}/eeitt"
 }

@@ -1,18 +1,17 @@
-import play.PlayImport.PlayKeys
+import play.sbt.PlayImport.PlayKeys
+import play.sbt.routes.RoutesKeys._
 import sbt.Keys._
 import sbt.Tests.{Group, SubProcess}
 import sbt._
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin._
 
-
 trait MicroService {
 
   import uk.gov.hmrc._
   import DefaultBuildSettings._
-  import uk.gov.hmrc.{SbtBuildInfo, ShellPrompt, SbtAutoBuildPlugin}
+  import uk.gov.hmrc.{SbtBuildInfo, SbtAutoBuildPlugin}
   import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
   import uk.gov.hmrc.versioning.SbtGitVersioning
-
 
   import TestPhases._
 
@@ -24,13 +23,13 @@ trait MicroService {
 
 
   lazy val microservice = Project(appName, file("."))
-    .enablePlugins(Seq(play.PlayScala,SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
+    .enablePlugins(Seq(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin) ++ plugins : _*)
     .settings(PlayKeys.playDefaultPort := 9190)
     .settings(playSettings : _*)
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
-    .settings(play.PlayImport.PlayKeys.routesImport ++= Seq(
+    .settings(routesImport ++= Seq(
                 "uk.gov.hmrc.eeitt.binders.ImportModeBinder._",
                 "uk.gov.hmrc.eeitt.binders.UserModeBinder._",
                 "uk.gov.hmrc.eeitt.models.ImportMode",
@@ -38,7 +37,6 @@ trait MicroService {
               ))
     .settings(
       libraryDependencies ++= appDependencies,
-      retrieveManaged := true,
       evictionWarningOptions in update := EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
     )
     .configs(IntegrationTest)

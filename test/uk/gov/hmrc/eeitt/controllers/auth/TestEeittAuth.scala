@@ -16,24 +16,8 @@
 
 package uk.gov.hmrc.eeitt.controllers.auth
 
-import play.api.mvc.Action
-import uk.gov.hmrc.eeitt.controllers.{ AsyncUserRequest, UserRequest }
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{ Accounts, ConfidenceLevel, CredentialStrength }
 import uk.gov.hmrc.play.frontend.auth._
-
-trait TestEeittAuth extends EeittAuth with Actions {
-  def authContext: AuthContext
-
-  override def AuthenticatedAction(r: UserRequest) =
-    Action {
-      r(authContext)
-    }
-
-  override def AsyncAuthenticatedAction(r: AsyncUserRequest) =
-    Action.async {
-      r(authContext)
-    }
-}
 
 trait TestUsers {
   def businessUser = AuthContext(

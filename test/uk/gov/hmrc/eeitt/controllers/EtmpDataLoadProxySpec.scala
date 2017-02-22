@@ -19,18 +19,26 @@ package uk.gov.hmrc.eeitt.controllers
 import com.google.common.base.Charsets
 import com.google.common.io.BaseEncoding
 import org.scalatest.concurrent.ScalaFutures
+import play.api.libs.json.JsString
+import play.api.{ Configuration, Environment }
 import play.api.http.{ HeaderNames, Status }
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
-import play.api.mvc.Result
+import play.api.mvc.{ Action, AnyContent, RequestHeader, Result }
 import play.api.test.{ FakeHeaders, FakeRequest }
-import uk.gov.hmrc.eeitt.connectors.EeittConnector
-import uk.gov.hmrc.eeitt.models.{ Agents, BusinessUsers, ImportMode, Live, UserMode }
-import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost }
-import uk.gov.hmrc.play.test.{ UnitSpec, WithFakeApplication }
+import uk.gov.hmrc.eeitt.{ ApplicationComponentsOnePerTest, FakeEeittConnector }
+import uk.gov.hmrc.eeitt.connectors.{ EeittConnector, VerificationResult }
+import uk.gov.hmrc.eeitt.controllers.auth.{ SecuredActions, SecuredActionsImpl }
+import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration }
+import uk.gov.hmrc.eeitt.models.{ AgentEnrollmentDetails, Agents, BusinessUsers, EnrollmentDetails, ImportMode, Live, UserMode }
+import uk.gov.hmrc.play.frontend.auth.AuthContext
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpPost, HttpResponse }
+import uk.gov.hmrc.play.test.{ UnitSpec }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with ScalaFutures {
+class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTest with ScalaFutures with FakeEeittConnector {
 
   def basic64(s: String): String = {
     BaseEncoding.base64().encode(s.getBytes(Charsets.UTF_8))
@@ -38,7 +46,6 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
   "business user data upload" should {
     "return response with FORBIDDEN status when basic auth is missing" in {
-      val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
 
@@ -54,7 +61,6 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
   "business user data upload" should {
     "return response with FORBIDDEN status when basic auth is incorrect" in {
-      val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
 
@@ -70,7 +76,6 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
   "business user data upload" should {
     "return response with CREATED status from the proxy when basic auth is present" in {
-      val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
 
@@ -86,7 +91,6 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
   "agent data upload" should {
     "return response with FORBIDDEN status when basic auth is missing" in {
-      val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
 
@@ -102,7 +106,6 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
   "agent data upload" should {
     "return response with FORBIDDEN status when basic auth is incorrect" in {
-      val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
 
@@ -118,7 +121,6 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
 
   "agent data upload" should {
     "return response with CREATED status from the proxy when basic auth is present" in {
-      val proxy = etmpDataLoaderProxy()
 
       val serverUrl = "http://test.invalid:8000"
 
@@ -132,33 +134,9 @@ class EtmpDataLoadProxySpec extends UnitSpec with WithFakeApplication with Scala
     }
   }
 
-  def etmpDataLoaderProxy() = new EtmpDataLoaderProxy with TestEeittConnector
+  val configuration = Configuration.load(Environment.simple())
+  val securedActions = new SecuredActionsImpl(configuration, null)
 
-  trait TestEeittConnector {
-    def eeittConnector: EeittConnector = new EeittConnector {
-      def eeittUrl: String = ???
+  val proxy = new EtmpDataLoaderProxy(eeittConnector(), securedActions)
 
-      def httpPost: HttpPost = ???
-
-      override def load(source: String, importMode: ImportMode, userMode: UserMode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[WSResponse] = {
-        Future.successful(stubWSResponse(Status.CREATED))
-      }
-    }
-
-    private def stubWSResponse(statusCode: Int): WSResponse = new WSResponse {
-      override def statusText = ???
-      override def status = statusCode
-
-      override def allHeaders = Map[String, Seq[String]]()
-
-      override def underlying[T] = ???
-      override def xml = ???
-      override def body = ""
-      override def header(key: String) = ???
-      override def cookie(name: String) = ???
-      override def cookies = ???
-      override def json = ???
-    }
-
-  }
 }

@@ -1,7 +1,9 @@
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.eeitt.AppConfig
 
-@(description: String, startUrl: String)(implicit request: Request[_], authContext: AuthContext)
+@(description: String, startUrl: String)(
+implicit request: Request[_], authContext: AuthContext, messages: Messages, appConfig: AppConfig)
 
 @main_template("File a return") {
   <header class="page-header">
