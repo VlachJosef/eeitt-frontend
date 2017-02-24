@@ -23,7 +23,7 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.{ AnyContent, Request, Result }
 import scala.concurrent.Future
 import scala.util.Try
-import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration, BasicAuthDisabled, BasicAuthEnabled, User }
+import uk.gov.hmrc.eeitt.infrastructure.{ Address, BasicAuth, BasicAuthConfiguration, BasicAuthDisabled, BasicAuthEnabled, User }
 import uk.gov.hmrc.eeitt.controllers.{ AsyncUserRequest, UserRequest }
 import uk.gov.hmrc.play.frontend.auth._
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
@@ -63,9 +63,24 @@ object BasicAuthConf {
       }.getOrElse(List.empty)
     }
 
+    def getWhitelist(config: Configuration): Option[List[Address]] = {
+
+      val whitelist = config.getString("basicAuth.whitelist")
+      config.getString("basicAuth.whitelist").map {
+        _.split(",").map(a => Address(a)).toList
+      } match {
+        case None =>
+          Logger.warn("Configuration of basicAuth.whitelist has not been provided, so no whitelisting of IP addresses for BasicAuth access")
+          None
+        case Some(x) =>
+          Logger.info(s""""Whitelisting of IP addresses for BasicAuth access configured to [${x.map(_.ip).mkString(",")}]""")
+          Some(x)
+      }
+    }
+
     config.getString("feature.basicAuthEnabled")
       .flatMap(flag => Try(flag.toBoolean).toOption) match {
-        case Some(true) => BasicAuthEnabled(getUsers(config))
+        case Some(true) => BasicAuthEnabled(getUsers(config), getWhitelist(config))
         case Some(false) => BasicAuthDisabled
         case _ => {
           Logger.warn("A boolean configuration value has not been provided for feature.basicAuthEnabled, defaulting to false")

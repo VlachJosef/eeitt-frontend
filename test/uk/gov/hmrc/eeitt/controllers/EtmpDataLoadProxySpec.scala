@@ -40,6 +40,8 @@ import scala.concurrent.{ ExecutionContext, Future }
 
 class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTest with ScalaFutures with FakeEeittConnector {
 
+  override def additionalConfiguration = Map("basicAuth.whitelist" -> "192.168.1.1")
+
   def basic64(s: String): String = {
     BaseEncoding.base64().encode(s.getBytes(Charsets.UTF_8))
   }
@@ -51,7 +53,40 @@ class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTes
 
       val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
-      }
+      }.withHeaders("True-Client-IP" -> "192.168.1.1")
+
+      val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.FORBIDDEN
+    }
+  }
+
+  "business user data upload" should {
+    "return response with FORBIDDEN status when IP address is missing" in {
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
+        override lazy val host = serverUrl
+      }.withHeaders(HeaderNames.AUTHORIZATION -> s"""Basic ${basic64("dave:davespassword")}""")
+
+      val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
+
+      result.header.status shouldBe Status.FORBIDDEN
+    }
+  }
+
+  "business user data upload" should {
+    "return response with FORBIDDEN status when IP address is incorrect" in {
+
+      val serverUrl = "http://test.invalid:8000"
+
+      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
+        override lazy val host = serverUrl
+      }.withHeaders(
+        HeaderNames.AUTHORIZATION -> s"""Basic ${basic64("dave:davespassword")}""",
+        "True-Client-IP" -> "10.0.0.1"
+      )
 
       val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
 
@@ -66,7 +101,10 @@ class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTes
 
       val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
-      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
+      }.withHeaders(
+        HeaderNames.AUTHORIZATION -> s"""Basic ${basic64("dave:notthepassword")}""",
+        "True-Client-IP" -> "192.168.1.1"
+      )
 
       val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
 
@@ -81,7 +119,10 @@ class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTes
 
       val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/business-users", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
-      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
+      }.withHeaders(
+        HeaderNames.AUTHORIZATION -> s"""Basic ${basic64("dave:davespassword")}""",
+        "True-Client-IP" -> "192.168.1.1"
+      )
 
       val result: Result = proxy.load(BusinessUsers, Live)(fakeRequest).futureValue
 
@@ -96,22 +137,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTes
 
       val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/agents", FakeHeaders(), body = "test data") {
         override lazy val host = serverUrl
-      }
-
-      val result: Result = proxy.load(Agents, Live)(fakeRequest).futureValue
-
-      result.header.status shouldBe Status.FORBIDDEN
-    }
-  }
-
-  "agent data upload" should {
-    "return response with FORBIDDEN status when basic auth is incorrect" in {
-
-      val serverUrl = "http://test.invalid:8000"
-
-      val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/agents", FakeHeaders(), body = "test business user data") {
-        override lazy val host = serverUrl
-      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:notthepassword")))
+      }.withHeaders(("True-Client-IP" -> "192.168.1.1"))
 
       val result: Result = proxy.load(Agents, Live)(fakeRequest).futureValue
 
@@ -126,7 +152,10 @@ class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTes
 
       val fakeRequest = new FakeRequest("POST", "/eeitt-auth/etmp-data/agents", FakeHeaders(), body = "agent test data") {
         override lazy val host = serverUrl
-      }.withHeaders(HeaderNames.AUTHORIZATION -> ("Basic " + basic64("dave:davespassword")))
+      }.withHeaders(
+        HeaderNames.AUTHORIZATION -> s"""Basic ${basic64("dave:davespassword")}""",
+        "True-Client-IP" -> "192.168.1.1"
+      )
 
       val result: Result = proxy.load(Agents, Live)(fakeRequest).futureValue
 
@@ -134,8 +163,7 @@ class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTes
     }
   }
 
-  val configuration = Configuration.load(Environment.simple())
-  val securedActions = new SecuredActionsImpl(configuration, null)
+  val securedActions = new SecuredActionsImpl(fakeApplication.configuration, null)
 
   val proxy = new EtmpDataLoaderProxy(eeittConnector(), securedActions)
 

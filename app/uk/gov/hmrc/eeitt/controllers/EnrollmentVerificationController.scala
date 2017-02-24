@@ -47,23 +47,6 @@ class EnrollmentVerificationController(
           Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl, groupIdentifier))
       }
     }
-    /* Action.async { implicit request =>
-     *   //println("configuration.underlying.root().render() " + configuration.underlying.root().render())
-     *   request.cookies.foreach(println)
-     *
-     *   import uk.gov.hmrc.play.http.HeaderNames.{ xRequestId, xRequestTimestamp }
-     *
-     *   println("play.api.mvc.Session.cookieSigner " + play.api.mvc.Session.cookieSigner.getClass.getCanonicalName)
-     *   val cookieOpt = request.cookies.get(play.api.mvc.Session.COOKIE_NAME)
-     *   println("play.api.mvc.Session.COOKIE_NAME " + play.api.mvc.Session.COOKIE_NAME)
-     *   println("cookieOpt.get.name               " + cookieOpt.map(_.name).getOrElse("NONAME"))
-     *   println("cookies.get(Session.COOKIE_NAME) " + request.cookies.get(play.api.mvc.Session.COOKIE_NAME))
-     *
-     *   val ddd = EnrollmentDetails(registrationNumber = "12", postcode = None, groupId = "dasdasd")
-     *   println("PPPPPPPPPPPP request PPPPPPPPPPPPPPPPPPPP " + request.session)
-     *   eeittConnector.registerNonAgent(ddd).map(_ => Ok("hello" + request.headers.get(xRequestId)))
-     *
-     * } */
   }
 
   def submitEnrollmentDetails(callbackUrl: String) = sa.AsyncAuthenticatedAction { implicit authContext => implicit request =>

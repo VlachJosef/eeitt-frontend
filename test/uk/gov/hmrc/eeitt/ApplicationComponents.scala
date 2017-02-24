@@ -18,6 +18,7 @@ package uk.gov.hmrc.eeitt
 
 import org.scalatest.{ BeforeAndAfterAll, TestSuite }
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import play.api.Configuration
 import play.api.http.Status
 import play.api.libs.json.JsString
 import play.api.{ Environment, Mode }
@@ -32,7 +33,12 @@ import uk.gov.hmrc.eeitt.models._
 trait ApplicationComponentsOnePerTest extends GuiceOneAppPerTest with ApplicationComponents {
   this: TestSuite =>
 
-  override val fakeApplication = new ApplicationLoader().load(context)
+  def additionalConfiguration: Map[String, Any] = Map.empty[String, Any]
+
+  private val config = Configuration.from(additionalConfiguration)
+
+  override val fakeApplication =
+    new ApplicationLoader().load(context.copy(initialConfiguration = context.initialConfiguration ++ config))
 
   override def beforeAll() = beforeAll(fakeApplication)
 
@@ -48,7 +54,7 @@ trait ApplicationComponents extends BeforeAndAfterAll {
     ApplicationLoader.createContext(env)
   }
 
-  def beforeAll(a: play.api.Application) {
+  def beforeAll(a: Application) {
     super.beforeAll()
     Play.start(a)
   }
