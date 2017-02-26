@@ -16,32 +16,28 @@
 
 package uk.gov.hmrc.eeitt.controllers
 
-import play.api.libs.ws.WSResponse
 import play.api.mvc.Action
-import uk.gov.hmrc.eeitt.FrontendGlobal
 import uk.gov.hmrc.eeitt.connectors.EeittConnector
+import uk.gov.hmrc.eeitt.controllers.auth.SecuredActions
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.eeitt.models.{ ImportMode, UserMode }
+import uk.gov.hmrc.play.http.HttpResponse
 
-trait EtmpDataLoaderProxy extends FrontendController {
+class EtmpDataLoaderProxy(eeittConnector: EeittConnector, sa: SecuredActions) extends FrontendController {
 
-  def eeittConnector: EeittConnector
-
-  def load(userMode: UserMode, importMode: ImportMode) = Action.async(parse.tolerantText) { implicit req =>
-    FrontendGlobal.withBasicAuth {
-      eeittConnector.load(req.body, importMode, userMode).map { resp =>
-        Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
+  def load(userMode: UserMode, importMode: ImportMode) = {
+    Action.async(parse.tolerantText) { implicit req =>
+      sa.BasicAuthentication {
+        eeittConnector.load(req.body, importMode, userMode).map { resp =>
+          Status(resp.status)(resp.body).withHeaders(extractHeaders(resp): _*)
+        }
       }
     }
   }
 
-  private def extractHeaders(resp: WSResponse): List[(String, String)] =
+  private def extractHeaders(resp: HttpResponse): List[(String, String)] =
     resp.allHeaders.map {
       case (key, values) => (key, values.mkString)
     }.toList
 
-}
-
-object EtmpDataLoaderProxy extends EtmpDataLoaderProxy {
-  def eeittConnector = EeittConnector
 }

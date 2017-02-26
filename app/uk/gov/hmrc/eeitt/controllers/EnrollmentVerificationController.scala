@@ -16,32 +16,40 @@
 
 package uk.gov.hmrc.eeitt.controllers
 
-import uk.gov.hmrc.eeitt.FrontendAuthConnector
+import play.api.Configuration
+import play.api.mvc.Action
+import uk.gov.hmrc.eeitt.{ AppConfig, FrontendAuthConnector }
 import uk.gov.hmrc.eeitt.connectors.{ EeittConnector, VerificationResult }
-import uk.gov.hmrc.eeitt.controllers.auth.EeittAuth
 import uk.gov.hmrc.eeitt.models._
 import uk.gov.hmrc.eeitt.views.html._
 import uk.gov.hmrc.play.frontend.auth.Actions
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.eeitt.controllers.auth.SecuredActions
+import play.api.i18n.{ Messages, MessagesApi, I18nSupport }
 
 import scala.concurrent.Future
 
-trait EnrollmentVerificationController extends FrontendController with Actions { self: EeittAuth =>
+class EnrollmentVerificationController(
+    val authConnector: AuthConnector,
+    eeittConnector: EeittConnector,
+    val messagesApi: MessagesApi,
+    sa: SecuredActions
+)(implicit appConfig: AppConfig) extends FrontendController with Actions with I18nSupport {
 
-  def eeittConnector: EeittConnector
+  def displayVerificationPage(callbackUrl: String) = {
+    sa.AsyncAuthenticatedAction { implicit authContext => implicit request =>
+      authConnector.getUserDetails[UserDetails](authContext).map {
+        case UserDetails(NonAgent, groupIdentifier) =>
+          Ok(verification_non_agent(EnrollmentDetails.form, callbackUrl, groupIdentifier))
 
-  def displayVerificationPage(callbackUrl: String) = AsyncAuthenticatedAction { implicit authContext => implicit request =>
-    authConnector.getUserDetails[UserDetails](authContext).map {
-      case UserDetails(NonAgent, groupIdentifier) =>
-        Ok(verification_non_agent(EnrollmentDetails.form, callbackUrl, groupIdentifier))
-
-      case UserDetails(Agent, groupIdentifier) =>
-        Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl, groupIdentifier))
+        case UserDetails(Agent, groupIdentifier) =>
+          Ok(verification_agent(AgentEnrollmentDetails.form, callbackUrl, groupIdentifier))
+      }
     }
   }
 
-  def submitEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction { implicit authContext => implicit request =>
+  def submitEnrollmentDetails(callbackUrl: String) = sa.AsyncAuthenticatedAction { implicit authContext => implicit request =>
     authConnector.getUserDetails[UserDetails](authContext).flatMap {
       case UserDetails(_, groupIdentifier) =>
         EnrollmentDetails.form.bindFromRequest().fold(
@@ -61,7 +69,7 @@ trait EnrollmentVerificationController extends FrontendController with Actions {
     }
   }
 
-  def submitAgentEnrollmentDetails(callbackUrl: String) = AsyncAuthenticatedAction { implicit authContext => implicit request =>
+  def submitAgentEnrollmentDetails(callbackUrl: String) = sa.AsyncAuthenticatedAction { implicit authContext => implicit request =>
     authConnector.getUserDetails[UserDetails](authContext).flatMap {
       case UserDetails(_, groupIdentifier) =>
         AgentEnrollmentDetails.form.bindFromRequest().fold(
@@ -81,10 +89,4 @@ trait EnrollmentVerificationController extends FrontendController with Actions {
     }
   }
 
-}
-
-object EnrollmentVerificationController extends EnrollmentVerificationController with EeittAuth {
-  protected def authConnector: AuthConnector = FrontendAuthConnector
-
-  def eeittConnector: EeittConnector = EeittConnector
 }

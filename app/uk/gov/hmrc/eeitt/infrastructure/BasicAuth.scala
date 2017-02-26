@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
 trait BasicAuth {
   def userAuthorised(credentials: Option[String]): Boolean
-  def whitelistPassed(address:Option[Address]): Boolean
+  def whitelistPassed(address: Option[Address]): Boolean
 
   def apply(block: => Future[Result])(implicit request: RequestHeader) = {
     val maybeCredentials = request.headers.get(HeaderNames.AUTHORIZATION)
@@ -45,7 +45,7 @@ trait BasicAuth {
 
 class AuthorisingBasicAuth(users: List[User], whitelist: Option[List[Address]]) extends BasicAuth {
 
-  def whitelistPassed(address:Option[Address]): Boolean = whitelist match {
+  def whitelistPassed(address: Option[Address]): Boolean = whitelist match {
     case Some(w) =>
       address match {
         case Some(a) =>
@@ -63,7 +63,7 @@ class AuthorisingBasicAuth(users: List[User], whitelist: Option[List[Address]]) 
 }
 
 object AlwaysAuthorisedBasicAuth extends BasicAuth {
-  override def whitelistPassed(address:Option[Address]): Boolean = true
+  override def whitelistPassed(address: Option[Address]): Boolean = true
   override def userAuthorised(credentials: Option[String]): Boolean = true
 }
 

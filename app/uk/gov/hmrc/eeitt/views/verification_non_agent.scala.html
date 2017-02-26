@@ -1,8 +1,10 @@
 @import uk.gov.hmrc.eeitt.models.EnrollmentDetails
 @import uk.gov.hmrc.play.frontend.auth.AuthContext
 @import uk.gov.hmrc.play.views.html.helpers._
+@import uk.gov.hmrc.eeitt.AppConfig
 
-@(enrollmentForm: Form[EnrollmentDetails], callbackUrl: String, groupId: String)(implicit request: Request[_], authContext: AuthContext)
+@(enrollmentForm: Form[EnrollmentDetails], callbackUrl: String, groupId: String)(
+implicit request: Request[_], authContext: AuthContext, messages: Messages, appConfig: AppConfig)
 
 @sidebarContent = {
   <section id="side-bar-section" class="section--branded section--blue-top">

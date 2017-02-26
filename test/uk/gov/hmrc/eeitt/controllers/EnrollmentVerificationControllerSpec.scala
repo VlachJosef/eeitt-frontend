@@ -18,26 +18,33 @@ package uk.gov.hmrc.eeitt.controllers
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{ Millis, Seconds, Span }
-import org.scalatestplus.play.OneAppPerSuite
+import play.api.{ Configuration, Environment, Mode }
+import play.api.i18n.{ DefaultLangs, DefaultMessagesApi }
+import play.api.mvc.{ Action, AnyContent, RequestHeader, Result }
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.eeitt.connectors.{ EeittConnector, VerificationResult }
-import uk.gov.hmrc.eeitt.controllers.auth.{ TestEeittAuth, TestUsers }
+import play.filters.csrf.CSRF.Token.{ RequestTag, NameRequestTag }
+import uk.gov.hmrc.eeitt.{ AppConfig, ApplicationComponentsOnePerTest, FakeAuthConnector, FakeEeittConnector }
+import uk.gov.hmrc.eeitt.connectors.VerificationResult
+import uk.gov.hmrc.eeitt.controllers.auth.{ SecuredActions, TestUsers }
 import uk.gov.hmrc.eeitt.models._
 import uk.gov.hmrc.play.frontend.auth._
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpGet, HttpPost, HttpReads }
 import uk.gov.hmrc.play.test.UnitSpec
+import scala.concurrent.Future
 
-import scala.concurrent.{ ExecutionContext, Future }
+class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures with ApplicationComponentsOnePerTest with TestUsers with FakeEeittConnector with FakeAuthConnector {
 
-class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures with OneAppPerSuite with TestUsers {
+  val fakeRequestWithCsrfToken = FakeRequest().copyFakeRequest(tags = Map(
+    NameRequestTag -> "",
+    RequestTag -> ""
+  ))
 
   "Verification page" should {
     "be specific for an agent if agent has logged-in" in {
       val controller = enrollmentVerificationController(agentUser)
 
-      val result = controller.displayVerificationPage(callbackUrl = "/dfs/forms")(FakeRequest()).futureValue
+      val result = controller.displayVerificationPage(callbackUrl = "/dfs/forms")(fakeRequestWithCsrfToken).futureValue
 
       status(result) shouldBe 200
       contentAsString(result) should include("Access code")
@@ -45,7 +52,7 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
     "be specific for a business user if non-agent user has logged-in" in {
       val controller = enrollmentVerificationController(businessUser)
 
-      val result = controller.displayVerificationPage(callbackUrl = "/dfs/forms")(FakeRequest()).futureValue
+      val result = controller.displayVerificationPage(callbackUrl = "/dfs/forms")(fakeRequestWithCsrfToken).futureValue
 
       status(result) shouldBe 200
       contentAsString(result) should include("Registration Number")
@@ -71,7 +78,7 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
     "return 400 bad request and the form with errors when submitted data was rejected by EEITT microservice" in {
       val failedVerificationOfFormData = VerificationResult(Some("error happened"))
       val controller = enrollmentVerificationController(businessUser, failedVerificationOfFormData)
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val request = fakeRequestWithCsrfToken.withFormUrlEncodedBody(
         "registrationNumber" -> "foo",
         "groupId" -> "test-group-id",
         "postcode" -> "postcode"
@@ -102,7 +109,7 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
     "return 400 bad request and the form with errors when submitted data was rejected by EEITT microservice" in {
       val failedVerificationOfFormData = VerificationResult(Some("error happened"))
       val controller = enrollmentVerificationController(agentUser, failedVerificationOfFormData)
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val request = fakeRequestWithCsrfToken.withFormUrlEncodedBody(
         "arn" -> "foo",
         "groupId" -> "test-group-id",
         "postcode" -> "postcode"
@@ -114,34 +121,35 @@ class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures wi
     }
   }
 
-  def enrollmentVerificationController(user: AuthContext, verificationResult: VerificationResult = null) =
-    new EnrollmentVerificationController with TestEeittAuth {
+  class SecuredActionsTest(authContext: AuthContext, val authConnector: AuthConnector) extends SecuredActions {
 
-      def eeittConnector: EeittConnector = new EeittConnector {
-        def eeittUrl: String = ???
-
-        def httpPost: HttpPost = ???
-
-        override def registerNonAgent(enrollmentDetails: EnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-          Future.successful(verificationResult)
-        }
-        override def registerAgent(agentEnrollmentDetails: AgentEnrollmentDetails)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[VerificationResult] = {
-          Future.successful(verificationResult)
-        }
-      }
-
-      protected def authConnector: AuthConnector = new AuthConnector {
-        def http: HttpGet = ???
-        val serviceUrl: String = "test-service-url"
-
-        override def getUserDetails[T](authContext: AuthContext)(implicit hc: HeaderCarrier, reads: HttpReads[T]): Future[T] = {
-          val affinityGroup = if (user.isDelegating) Agent else NonAgent
-          Future.successful(UserDetails(affinityGroup, "test-group-id")).asInstanceOf[Future[T]]
-        }
-      }
-
-      def authContext: AuthContext = user
+    def AuthenticatedAction(r: UserRequest): Action[AnyContent] = Action {
+      r(authContext)
     }
+    def AsyncAuthenticatedAction(r: AsyncUserRequest): Action[AnyContent] = Action.async {
+      r(authContext)
+    }
+    def BasicAuthentication(r: => Future[Result])(implicit request: RequestHeader): Future[Result] = ???
+  }
+
+  val configuration = Configuration.reference
+  val mode: Mode.Mode = Mode.Test
+  val env = Environment.simple(mode = mode)
+  val langs = new DefaultLangs(configuration)
+  val messageApi = new DefaultMessagesApi(env, configuration, langs)
+
+  val appConfig = new AppConfig {
+    val analyticsToken: String = ""
+    val analyticsHost: String = ""
+    val reportAProblemPartialUrl: String = ""
+    val reportAProblemNonJSUrl: String = ""
+  }
+
+  def enrollmentVerificationController(user: AuthContext, verificationResult: VerificationResult = null) = {
+    val authCon = authConnector(user)
+    val securedActions = new SecuredActionsTest(user, authCon)
+    new EnrollmentVerificationController(authCon, eeittConnector(verificationResult), messageApi, securedActions)(appConfig)
+  }
 
   implicit override val patienceConfig = PatienceConfig(timeout = Span(5, Seconds), interval = Span(10, Millis))
 
