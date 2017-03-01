@@ -48,7 +48,7 @@ class EeittConnector(eeittUrl: String) {
 
   def load(source: String, importMode: ImportMode, userMode: UserMode)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     withLoggingFutures {
-      httpPost.doPost(s"$eeittUrl/etmp-data/$importMode/$userMode", source, Seq.empty[(String, String)])
+      httpPost.doPostString(s"$eeittUrl/etmp-data/$importMode/$userMode", source, Seq.empty[(String, String)])
     }
   }
 }
