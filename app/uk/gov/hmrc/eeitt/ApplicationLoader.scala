@@ -40,7 +40,7 @@ import uk.gov.hmrc.play.config.{ RunMode, ServicesConfig }
 import uk.gov.hmrc.play.filters.{ CacheControlFilter, MicroserviceFilterSupport, RecoveryFilter }
 import uk.gov.hmrc.play.filters.frontend.{ CSRFExceptionsFilter, DeviceIdFilter, HeadersFilter, CookieCryptoFilter }
 import uk.gov.hmrc.play.frontend.bootstrap.ShowErrorPage
-import uk.gov.hmrc.play.frontend.filters.{ DeviceIdCookieFilter, SecurityHeadersFilterFactory }
+import uk.gov.hmrc.play.frontend.filters.{ DeviceIdCookieFilter, SecurityHeadersFilterFactory, SessionCookieCryptoFilter }
 import uk.gov.hmrc.play.graphite.{ GraphiteConfig, GraphiteMetricsImpl }
 import uk.gov.hmrc.play.audit.http.config.ErrorAuditingSettings
 import uk.gov.hmrc.play.config.{ AppName, ControllerConfig }
@@ -134,7 +134,7 @@ class FFilters(
     metrics: Metrics,
     csrfFilter: CSRFFilter,
     val auditConnector: AuditConnector
-)(implicit materializer: Materializer) extends AppName {
+)(implicit materializer: Materializer) extends AppName { self =>
 
   protected def app: Application = application
 
@@ -144,7 +144,10 @@ class FFilters(
 
   def frontendAuditFilter: FrontendAuditFilter = new AuditFilter(application, auditConnector)
   def loggingFilter: FrontendLoggingFilter = LoggingFilter
-  def securityFilter: SecurityHeadersFilter = new SecurityHeadersFilterFactoryCustom(configuration).newInstance
+
+  def securityFilter: SecurityHeadersFilter = new SecurityHeadersFilterFactory {
+    override def configuration = self.configuration
+  }.newInstance
 
   lazy val enableSecurityHeaderFilter = configuration.getBoolean("security.headers.filter.enabled").getOrElse(true)
 
@@ -153,7 +156,7 @@ class FFilters(
   def frontendFilters: Seq[EssentialFilter] = Seq(
     metricsFilter,
     HeadersFilter,
-    new SessionCookieCryptoFilterCustom,
+    SessionCookieCryptoFilter,
     deviceIdFilter,
     loggingFilter,
     frontendAuditFilter,
@@ -267,33 +270,4 @@ trait ApplicationModule extends BuiltInComponents
   object ControllerConfiguration extends ControllerConfig {
     lazy val controllerConfigs = configuration.underlying.as[Config]("controllers")
   }
-}
-
-class SecurityHeadersFilterFactoryCustom(configuration: Configuration) extends SecurityHeadersFilterFactory {
-
-  override lazy val enableSecurityHeaderFilterDecode = configuration.getBoolean("security.headers.filter.decoding.enabled").getOrElse(false)
-
-  override def readAndDecodeConfigValue(configPropertyName: String, defaultPropertyValue: String) = configuration.getString(configPropertyName)
-    .fold(defaultPropertyValue) { propertyValue =>
-      if (enableSecurityHeaderFilterDecode && isNotDefaultValue(defaultPropertyValue, propertyValue))
-        new String(Base64.decodeBase64(propertyValue))
-
-      else propertyValue
-    }
-}
-
-class SessionCookieCryptoFilterCustom extends CookieCryptoFilter with MicroserviceFilterSupport {
-
-  protected override val cookieName: String = "mdtp"
-
-  // Lazy because the filter is instantiated before the config is loaded
-  private lazy val crypto = ApplicationCrypto.SessionCookieCrypto
-
-  override protected val encrypter = encrypt _
-  override protected val decrypter = decrypt _
-
-  def encrypt(plainCookie: String): String = crypto.encrypt(PlainText(plainCookie)).value
-
-  def decrypt(encryptedCookie: String): String = crypto.decrypt(Crypted(encryptedCookie)).value
-
 }
