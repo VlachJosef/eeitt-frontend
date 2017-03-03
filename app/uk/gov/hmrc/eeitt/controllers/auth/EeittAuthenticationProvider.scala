@@ -110,3 +110,4 @@ object EeittPageVisibilityPredicate extends PageVisibilityPredicate {
   def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] =
     Future.successful(PageIsVisible)
 }
+
