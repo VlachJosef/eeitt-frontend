@@ -17,14 +17,14 @@
 package uk.gov.hmrc.eeitt
 
 import akka.stream.Materializer
-import play.api.Application
+import play.api.{ Configuration, Mode }
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
-import uk.gov.hmrc.play.audit.http.connector.{ AuditConnector => Auditing }
-import uk.gov.hmrc.play.config.{ AppName, RunMode, ServicesConfig }
+import uk.gov.hmrc.play.audit.http.connector.AuditConnector
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.ws.{ WSDelete, WSGet, WSPost, WSPut }
 
-class FrontendAuditConnector(materializer: Materializer) extends Auditing {
+class FrontendAuditConnector(materializer: Materializer) extends AuditConnector {
   implicit def mat: Materializer = materializer
   override lazy val auditingConfig = LoadAuditingConfig(s"auditing")
 }
@@ -33,7 +33,10 @@ object WSHttp extends WSGet with WSPut with WSPost with WSDelete {
   override val hooks = NoneRequired
 }
 
-class FrontendAuthConnector(val app: Application) extends AuthConnector with ServicesConfig {
+class FrontendAuthConnector(
+    override val runModeConfiguration: Configuration,
+    override val mode: Mode.Mode
+) extends AuthConnector with ServicesConfig {
   val serviceUrl = baseUrl("auth")
   lazy val http = WSHttp
 }

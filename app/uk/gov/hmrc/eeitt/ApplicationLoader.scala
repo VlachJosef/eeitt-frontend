@@ -130,19 +130,17 @@ class Graphite(configuration: Configuration) extends GraphiteConfig {
 
 class FFilters(
     configuration: Configuration,
-    application: Application,
     metrics: Metrics,
     csrfFilter: CSRFFilter,
-    val auditConnector: AuditConnector
-)(implicit materializer: Materializer) extends AppName { self =>
-
-  protected def app: Application = application
+    val auditConnector: AuditConnector,
+    appName: String
+)(implicit materializer: Materializer) { self =>
 
   val metricsFilter: MetricsFilter = new MetricsFilterImpl(metrics)
 
   val deviceIdFilter: DeviceIdFilter = DeviceIdCookieFilter(appName, auditConnector)
 
-  def frontendAuditFilter: FrontendAuditFilter = new AuditFilter(application, auditConnector)
+  def frontendAuditFilter: FrontendAuditFilter = new AuditFilter(configuration, auditConnector)
   def loggingFilter: FrontendLoggingFilter = LoggingFilter
 
   def securityFilter: SecurityHeadersFilter = new SecurityHeadersFilterFactory {
@@ -171,9 +169,9 @@ class FFilters(
   }
 
   class AuditFilter(
-      val app: Application,
+      override val appNameConfiguration: Configuration,
       override val auditConnector: AuditConnector
-  ) extends FrontendAuditFilter with RunMode with AppName {
+  ) extends FrontendAuditFilter with AppName {
     override def mat = materializer
     override lazy val maskedFormFields = Seq("password")
     override lazy val applicationPort = None
@@ -194,7 +192,9 @@ trait ApplicationModule extends BuiltInComponents
     with CSRFComponents
     with ServicesConfig { self =>
 
-  lazy val app = configurationApp
+  override lazy val appNameConfiguration = configuration
+  override lazy val mode: Mode.Mode = environment.mode
+  override lazy val runModeConfiguration: Configuration = configuration
 
   Logger.info(s"Starting microservice : $appName : in mode : ${environment.mode}")
 
@@ -230,7 +230,7 @@ trait ApplicationModule extends BuiltInComponents
   // Don't use uk.gov.hmrc.play.graphite.GraphiteMetricsImpl as it won't allow hot reload due to overridden onStop() method
   lazy val metrics = new MetricsImpl(applicationLifecycle, configuration)
 
-  override lazy val httpFilters: Seq[EssentialFilter] = new FFilters(configuration, configurationApp, metrics, csrfFilter, auditConnector)(materializer).filters
+  override lazy val httpFilters: Seq[EssentialFilter] = new FFilters(configuration, metrics, csrfFilter, auditConnector, appName)(materializer).filters
 
   // We need to create explicit AdminController and provide it into injector so Runtime DI could be able
   // to find it when endpoints in health.Routes are being called
@@ -248,7 +248,7 @@ trait ApplicationModule extends BuiltInComponents
 
   val eeittUrl: String = s"${baseUrl("eeitt")}/eeitt"
 
-  val authConnector = new FrontendAuthConnector(configurationApp)
+  val authConnector = new FrontendAuthConnector(configuration, environment.mode)
   val eeittConnector = new EeittConnector(eeittUrl)
 
   val securedActions = new SecuredActionsImpl(configuration, authConnector)
