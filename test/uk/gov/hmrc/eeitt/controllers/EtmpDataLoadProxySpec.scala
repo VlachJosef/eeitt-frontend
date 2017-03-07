@@ -26,7 +26,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.mvc.{ Action, AnyContent, RequestHeader, Result }
 import play.api.test.{ FakeHeaders, FakeRequest }
-import uk.gov.hmrc.eeitt.{ ApplicationComponentsOnePerTest, FakeEeittConnector }
+import uk.gov.hmrc.eeitt.{ ApplicationComponentsOnePerSuite, FakeEeittConnector }
 import uk.gov.hmrc.eeitt.connectors.{ EeittConnector, VerificationResult }
 import uk.gov.hmrc.eeitt.controllers.auth.{ SecuredActions, SecuredActionsImpl }
 import uk.gov.hmrc.eeitt.infrastructure.{ BasicAuth, BasicAuthConfiguration }
@@ -38,7 +38,7 @@ import uk.gov.hmrc.play.test.{ UnitSpec }
 
 import scala.concurrent.{ ExecutionContext, Future }
 
-class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerTest with ScalaFutures with FakeEeittConnector {
+class EtmpDataLoadProxySpec extends UnitSpec with ApplicationComponentsOnePerSuite with ScalaFutures with FakeEeittConnector {
 
   override def additionalConfiguration = Map("basicAuth.whitelist" -> "192.168.1.1")
 

@@ -24,7 +24,7 @@ import play.api.mvc.{ Action, AnyContent, RequestHeader, Result }
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.filters.csrf.CSRF.Token.{ RequestTag, NameRequestTag }
-import uk.gov.hmrc.eeitt.{ AppConfig, ApplicationComponentsOnePerTest, FakeAuthConnector, FakeEeittConnector }
+import uk.gov.hmrc.eeitt.{ AppConfig, ApplicationComponentsOnePerSuite, FakeAuthConnector, FakeEeittConnector }
 import uk.gov.hmrc.eeitt.connectors.VerificationResult
 import uk.gov.hmrc.eeitt.controllers.auth.{ SecuredActions, TestUsers }
 import uk.gov.hmrc.eeitt.models._
@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.test.UnitSpec
 import scala.concurrent.Future
 
-class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures with ApplicationComponentsOnePerTest with TestUsers with FakeEeittConnector with FakeAuthConnector {
+class EnrollmentVerificationControllerSpec extends UnitSpec with ScalaFutures with ApplicationComponentsOnePerSuite with TestUsers with FakeEeittConnector with FakeAuthConnector {
 
   val fakeRequestWithCsrfToken = FakeRequest().copyFakeRequest(tags = Map(
     NameRequestTag -> "",
