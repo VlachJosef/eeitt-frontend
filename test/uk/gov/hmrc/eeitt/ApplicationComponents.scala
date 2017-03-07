@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.eeitt
 
-import org.scalatest.{ BeforeAndAfterAll, TestSuite }
-import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import java.io.File
+import org.scalatest.TestSuite
+import org.scalatestplus.play.{ BaseOneAppPerSuite, FakeApplicationFactory }
 import play.api.Configuration
 import play.api.http.Status
 import play.api.libs.json.JsString
@@ -30,38 +31,20 @@ import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.{ HeaderCarrier, HttpGet, HttpReads, HttpResponse }
 import uk.gov.hmrc.eeitt.models._
 
-trait ApplicationComponentsOnePerTest extends GuiceOneAppPerTest with ApplicationComponents {
+trait ApplicationComponentsOnePerSuite extends BaseOneAppPerSuite with FakeApplicationFactory {
   this: TestSuite =>
 
   def additionalConfiguration: Map[String, Any] = Map.empty[String, Any]
 
-  private val config = Configuration.from(additionalConfiguration)
+  private lazy val config = Configuration.from(additionalConfiguration)
 
-  override val fakeApplication =
+  override lazy val fakeApplication =
     new ApplicationLoader().load(context.copy(initialConfiguration = context.initialConfiguration ++ config))
 
-  override def beforeAll() = beforeAll(fakeApplication)
-
-  override def afterAll() = afterAll(fakeApplication)
-}
-
-trait ApplicationComponents extends BeforeAndAfterAll {
-  this: TestSuite =>
-  import play.api._
-  def context: ApplicationLoader.Context = {
-    val classLoader = ApplicationLoader.getClass.getClassLoader
-    val env = new Environment(new java.io.File("."), classLoader, Mode.Test)
-    ApplicationLoader.createContext(env)
-  }
-
-  def beforeAll(a: Application) {
-    super.beforeAll()
-    Play.start(a)
-  }
-
-  def afterAll(a: Application) {
-    super.afterAll()
-    Play.stop(a)
+  def context: play.api.ApplicationLoader.Context = {
+    val classLoader = play.api.ApplicationLoader.getClass.getClassLoader
+    val env = new Environment(new File("."), classLoader, Mode.Test)
+    play.api.ApplicationLoader.createContext(env)
   }
 }
 
